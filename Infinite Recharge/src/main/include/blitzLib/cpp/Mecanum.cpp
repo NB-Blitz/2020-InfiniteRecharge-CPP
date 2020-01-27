@@ -5,12 +5,12 @@ void Blitz::Mecanum::Drive()
     Drive(0, 0, 0);
 }
 
-void Blitz::Mecanum::Drive(0, 0, 0)
+void Blitz::Mecanum::Drive(double x, double y, double z)
 {
     motorValues[0] = (x + y - z);
     motorValues[1] = (-x + y - z);
     motorValues[2] = (-x + y + z);
-    motorValues[3] = (X + y + z);
+    motorValues[3] = (x + y + z);
 
     double maxMagnitude = 0;
 
@@ -26,7 +26,7 @@ void Blitz::Mecanum::Drive(0, 0, 0)
 
     if (maxMagnitude > DriveReference::MAX_OUPUT)
     {
-        for (int i = 0; i < MotorValues.size(); i++)
+        for (int i = 0; i < 4; i++)
         {
             motorValues[i] = motorValues[i] / maxMagnitude;
         }

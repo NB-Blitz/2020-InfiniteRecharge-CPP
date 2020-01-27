@@ -26,7 +26,7 @@ void Blitz::Arcade::Drive(double y, double z)
 
     if (maxMagnitude > DriveReference::MAX_OUPUT)
     {
-        for (int i = 0; i < MotorValues.size(); i++)
+        for (int i = 0; i < 4; i++)
         {
             motorValues[i] = motorValues[i] / maxMagnitude;
         }

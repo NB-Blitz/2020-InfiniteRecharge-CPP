@@ -1,10 +1,6 @@
 #include "DriveTrain.hpp"
 
-Blitz::DriveTrain::DriveTrain() :
-    LeftFrontMotor(DriveReference::LEFT_FRONT_MOTOR_ID),
-    LeftBackMotor(DriveReference::LEFT_BACK_MOTOR_ID),
-    RightFrontMotor(DriveReference::RIGHT_FRONT_MOTOR_ID),
-    RightBackMotor(DriveReference::RIGHT_BACK_MOTOR_ID)
+Blitz::DriveTrain::DriveTrain()
 {
 
 }
