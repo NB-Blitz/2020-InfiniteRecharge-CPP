@@ -2,7 +2,9 @@
 
 Robot::Robot() :
   Xbox(0),
-  DriveTrain()
+  DriveTrain(),
+  timer(),
+  autonomousJoy(1)
 {
 
 }
@@ -39,12 +41,29 @@ void Robot::RobotInit()
 
 void Robot::AutonomousInit() 
 {
-
+  timer.start();
 }
 
 void Robot::AutonomousPeriodic()
 {
+  if (autonomousJoy.getRawButton(1))
+  {
+  // 1
+  }
+  if (autonomousJoy.getRawButton(3))
+  {
+    double y = .5;
+    if (timer.get() > AUTONOMOUS_FORWARD)
+    {
+      y = -.5;
+    }
+    if (timer.get() > AUTONOMOUS_FORWARD + AUTONOMOUS_FORWARD)
+    {
+      y = 0;
+    }
 
+    DriveTrain.Drive(0, y, 0);
+  }
 }
 
 void Robot::TeleopInit() 

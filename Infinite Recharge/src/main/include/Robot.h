@@ -19,6 +19,8 @@ class Robot : public frc::TimedRobot
         Blitz::Joysticks::XboxController Xbox;
 
         Blitz::Mecanum DriveTrain;
+        frc::Timer timer;
+        frc::Joystick autonomousJoy;
 
         static constexpr double LEFT_FRONT_FGAIN = 0;
         static constexpr double LEFT_FRONT_PGAIN = 0;
@@ -43,5 +45,7 @@ class Robot : public frc::TimedRobot
         static constexpr double RIGHT_BACK_IGAIN = 0;
         static constexpr double RIGHT_BACK_DGAIN = 0;
         static constexpr double RIGHT_BACK_DIR = 1;
+
+        static constexpr double AUTONOMOUS_FORWARD = 5;
   
 };
