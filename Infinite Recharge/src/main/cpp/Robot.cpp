@@ -4,7 +4,8 @@ Robot::Robot() :
   Xbox(0),
   DriveTrain(),
   timer(),
-  autonomousJoy(1)
+  autonomousJoy(1),
+  rotation()
 {
 
 }
@@ -48,7 +49,30 @@ void Robot::AutonomousPeriodic()
 {
   if (autonomousJoy.getRawButton(1))
   {
-  // 1
+    int stage = 1;
+    double z = 1;
+    if (stage == 1)
+    {
+      if (rotation.getRawHeading() > 180)
+      {
+        stage = 2;
+      }
+    }
+    if (stage == 2)
+    {
+      if (turnTowardsTarget())
+      {
+        stage = 3;
+      }
+    }
+    if (stage == 3)
+    {
+      
+    }
+
+
+    
+      DriveTrain.Drive(0, 0, 1);
   }
   if (autonomousJoy.getRawButton(3))
   {

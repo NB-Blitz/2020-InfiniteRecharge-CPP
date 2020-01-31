@@ -21,6 +21,7 @@ class Robot : public frc::TimedRobot
         Blitz::Mecanum DriveTrain;
         frc::Timer timer;
         frc::Joystick autonomousJoy;
+        frc::AHRS rotation;
 
         static constexpr double LEFT_FRONT_FGAIN = 0;
         static constexpr double LEFT_FRONT_PGAIN = 0;
