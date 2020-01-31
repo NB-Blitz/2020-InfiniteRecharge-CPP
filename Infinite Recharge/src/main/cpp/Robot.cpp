@@ -7,6 +7,7 @@ Robot::Robot() :
 
 }
 
+
 void Robot::RobotInit() 
 {
   DriveTrain.Initialize();
@@ -35,6 +36,43 @@ void Robot::RobotInit()
   DriveTrain.TuneP(3, RIGHT_BACK_PGAIN);
   DriveTrain.TuneI(3, RIGHT_BACK_IGAIN);
   DriveTrain.TuneD(3, RIGHT_BACK_DGAIN);
+
+  
+  //Color Sensor stuff
+  m_colorMatcher.AddColorMatch(kBlueTarget);
+  m_colorMatcher.AddColorMatch(kGreenTarget);
+  m_colorMatcher.AddColorMatch(kRedTarget);
+  m_colorMatcher.AddColorMatch(kYellowTarget);
+  m_colorMatcher.AddColorMatch(kOtherTarget);
+  m_colorMatcher.AddColorMatch(kBlackTarget);
+}
+
+void Robot::RobotPeriodic() {
+  frc::Color detectedColor = m_colorSensor.GetColor();
+  std::string colorString;
+  double confidence = 0.0;
+  frc::Color matchedColor = m_colorMatcher.MatchClosestColor(detectedColor, confidence);
+
+  if (matchedColor == kBlueTarget) {
+    colorString = "Blue";
+  } else if (matchedColor == kRedTarget) {
+    colorString = "Red";
+  }  else if (matchedColor == kYellowTarget) {
+    colorString = "Yellow";
+  } else if (matchedColor == kGreenTarget) {
+    colorString = "Green";
+  } else if (matchedColor == kOtherTarget) {
+    colorString = "Other";
+  } else if (matchedColor == kBlackTarget) {
+    colorString = "Black";
+  } else {
+    colorString = "Unknown";
+  }
+  frc::SmartDashboard::PutNumber("Red", detectedColor.red);
+  frc::SmartDashboard::PutNumber("Green", detectedColor.green);
+  frc::SmartDashboard::PutNumber("Blue", detectedColor.blue);
+  frc::SmartDashboard::PutNumber("Confidence", confidence);
+  frc::SmartDashboard::PutString("Detected Color", colorString);
 }
 
 void Robot::AutonomousInit() 
