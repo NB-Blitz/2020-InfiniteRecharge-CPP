@@ -50,7 +50,7 @@ void Robot::AutonomousInit()
 
 void Robot::AutonomousPeriodic()
 {
-  if (autonomousJoy.GetRawButton(1))
+  if (autonomousJoy.GetRawButton(1) || autonomousJoy.GetRawButton(2))
   {
     double z = 0;
     double y = 0;
@@ -117,17 +117,31 @@ void Robot::AutonomousPeriodic()
   }
   if (autonomousJoy.GetRawButton(3))
   {
-    double y = .5;
-    if (timer.Get() > AUTONOMOUS_FORWARD)
+    double y = 0;
+    if (stage == 0)
     {
-      y = -.5;
+      if (timer.Get() < AUTONOMOUS_FORWARD)
+      {
+        y = .5;
+      }
+      else
+      {
+        stage = 1;
+      }
     }
-    if (timer.Get() > AUTONOMOUS_FORWARD + AUTONOMOUS_FORWARD)
+    if(stage == 1)
     {
-      y = 0;
+      if (timer.Get() < AUTONOMOUS_FORWARD + AUTONOMOUS_FORWARD)
+      {
+        y = -.5;
+      }
     }
 
-    DriveTrain.Drive(0, y, 0);
+    frc::SmartDashboard::PutNumber("Timer", timer.Get());
+    frc::SmartDashboard::PutNumber("y", y);
+
+
+    DriveTrain.Drive(0, 0, y);
   }
 }
 
@@ -144,7 +158,7 @@ void Robot::TeleopPeriodic()
   double YValue = Xbox.GetLeftY();
   double ZValue = Xbox.GetRightX();
 
-  DriveTrain.Drive(XValue, ZValue, YValue);
+  DriveTrain.Drive(-XValue, -ZValue, -YValue);
 
   SmartDashboard::PutNumber("Rotation", rotation.GetFusedHeading());
 
