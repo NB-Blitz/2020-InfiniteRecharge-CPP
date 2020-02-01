@@ -5,7 +5,7 @@ Robot::Robot() :
   DriveTrain(),
   timer(),
   autonomousJoy(1),
-  rotation()
+  rotation {SPI::Port::kMXP}
 {
 
 }
@@ -14,10 +14,10 @@ void Robot::RobotInit()
 {
   DriveTrain.Initialize();
 
-  DriveTrain.SetMotorDirection(0, LEFT_FRONT_DIR);
-  DriveTrain.SetMotorDirection(1, LEFT_BACK_DIR);
-  DriveTrain.SetMotorDirection(2, RIGHT_FRONT_DIR);
-  DriveTrain.SetMotorDirection(3, RIGHT_BACK_DIR);
+  DriveTrain.SetMotorDirection(1, LEFT_FRONT_DIR);
+  DriveTrain.SetMotorDirection(2, LEFT_BACK_DIR);
+  DriveTrain.SetMotorDirection(3, RIGHT_FRONT_DIR);
+  DriveTrain.SetMotorDirection(4, RIGHT_BACK_DIR);
 
   DriveTrain.TuneF(0, LEFT_FRONT_FGAIN);
   DriveTrain.TuneP(0, LEFT_FRONT_PGAIN);
@@ -42,22 +42,38 @@ void Robot::RobotInit()
 
 void Robot::AutonomousInit() 
 {
-  timer.start();
+  stage = 0;
+  rotation.ZeroYaw();
+  timer.Reset();
+  timer.Start();
 }
 
 void Robot::AutonomousPeriodic()
 {
-  if (autonomousJoy.getRawButton(1))
+  if (autonomousJoy.GetRawButton(1))
   {
-    int stage = 1;
-    double z = 1;
-    if (stage == 1)
+    double z = 0;
+    double y = 0;
+    if (stage == 0)
     {
-      if (rotation.getRawHeading() > 180)
+      if (timer.Get() < AUTONOMOUS_FORWARD)
       {
-        stage = 2;
+        y = .5;
+      }
+      else
+      {
+        stage = 1;
       }
     }
+    if (stage == 1)
+    {
+      z = -.5;
+      if (rotation.GetAngle() > 180)
+      {
+        stage = 4;
+      }
+    }
+    /*
     if (stage == 2)
     {
       if (turnTowardsTarget())
@@ -67,21 +83,46 @@ void Robot::AutonomousPeriodic()
     }
     if (stage == 3)
     {
-      
+      if(shootBalls())
+      {
+        stage = 4;
+      }
+    }
+    */
+    if (stage == 4)
+    {
+      z = .5;
+      if (rotation.GetAngle() < 0)
+      {
+        stage = 5;
+        timer.Reset();
+        timer.Start();
+      }
+    }
+    if(stage == 5)
+    {
+      if (timer.Get() < AUTONOMOUS_FORWARD)
+      {
+        y = -.5;
+      }
     }
 
+    frc::SmartDashboard::PutNumber("Timer", timer.Get());
+    frc::SmartDashboard::PutNumber("Rotation", rotation.GetAngle());
+    frc::SmartDashboard::PutNumber("y", y);
+    frc::SmartDashboard::PutNumber("z", z);
 
-    
-      DriveTrain.Drive(0, 0, 1);
+
+    DriveTrain.Drive(0, z, y);
   }
-  if (autonomousJoy.getRawButton(3))
+  if (autonomousJoy.GetRawButton(3))
   {
     double y = .5;
-    if (timer.get() > AUTONOMOUS_FORWARD)
+    if (timer.Get() > AUTONOMOUS_FORWARD)
     {
       y = -.5;
     }
-    if (timer.get() > AUTONOMOUS_FORWARD + AUTONOMOUS_FORWARD)
+    if (timer.Get() > AUTONOMOUS_FORWARD + AUTONOMOUS_FORWARD)
     {
       y = 0;
     }
@@ -103,8 +144,9 @@ void Robot::TeleopPeriodic()
   double YValue = Xbox.GetLeftY();
   double ZValue = Xbox.GetRightX();
 
-  DriveTrain.Drive(XValue, YValue, ZValue);
+  DriveTrain.Drive(XValue, ZValue, YValue);
 
+  SmartDashboard::PutNumber("Rotation", rotation.GetFusedHeading());
 
   SmartDashboard::PutNumber("DriveMotor 1 Speed", DriveTrain.GetMotorOutput(0));
   SmartDashboard::PutNumber("DriveMotor 2 Speed", DriveTrain.GetMotorOutput(1));
