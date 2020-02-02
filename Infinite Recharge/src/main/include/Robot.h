@@ -1,6 +1,7 @@
 #pragma once
 
-#include <frc/WPILib.h>
+#include <frc/TimedRobot.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 #include <BlitzLib/BlitzLib.hpp>
 
 
