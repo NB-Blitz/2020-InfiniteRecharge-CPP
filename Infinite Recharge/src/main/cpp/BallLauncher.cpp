@@ -1,7 +1,16 @@
 #include "BallLauncher.hpp"
 
-Blitz::BallLauncher::BallLauncher()
+Blitz::BallLauncher::BallLauncher() :
+    TurretHomeSwitch(1)
 {
+    TurretMotorPID.SetP(TURRET_PGAIN);
+    TurretMotorPID.SetI(TURRET_IGAIN);
+    TurretMotorPID.SetD(TURRET_DGAIN);
+    TurretMotorPID.SetIZone(TURRET_IZONE);
+    TurretMotorPID.SetFF(TURRET_FEED_FORWARD);
+    TurretMotorPID.SetOutputRange(MIN_OUTPUT, MAX_OUTPUT);
+    TurretMotorEncoder.SetPositionConversionFactor(TURRET_POSITION_CONVERSION);
+
     TopMotorPID.SetP(TOP_PGAIN);
     TopMotorPID.SetI(TOP_IGAIN);
     TopMotorPID.SetD(TOP_DGAIN);
@@ -19,18 +28,100 @@ Blitz::BallLauncher::BallLauncher()
     BottomMotor.SetClosedLoopRampRate(RAMP_RATE);
 }
 
-void Blitz::BallLauncher::SetLauncherRotation(int angle)
+bool Blitz::BallLauncher::HomeLauncher()
 {
+    if(!FastHome)
+    {
+        if(!TurretHomeSwitch.Get())
+        {
+            TurretMotor.Set(FastHomeSpeed);
+        }  
+        else
+        {
+            TurretMotor.Set(0); 
+            FastHome = true;
+            FastHomeReleased = false;
+        }
+    }
+    else if(!FastHomeReleased)
+    {
+        if(TurretHomeSwitch.Get())
+        {
+            TurretMotor.Set(-FastHomeSpeed);
+        }
+        else
+        {
+            TurretMotor.Set(0);
+            FastHomeReleased = true;
+        }
+    }
+    else if(!Homed)
+    {
+        if(!TurretHomeSwitch.Get())
+        {
+            TurretMotor.Set(SlowHomeSpeed);
+        }
+        else
+        {
+            TurretMotor.Set(0);
+            Homed = true;
+        }
+    }
 
+    return Homed;
 }
 
-void Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
+void Blitz::BallLauncher::SetTargetDistance(double dist)
 {
-    int topRPM = rpm - (backSpin/2);
-    int bottomRPM = -(rpm + (backSpin/2));
+    TargetDistance = dist;
+}
 
-    SetTopMotorRPM(topRPM);
-    SetBottomMotorRPM(bottomRPM);
+void Blitz::BallLauncher::SetLauncherRotationRelative(double angle)
+{
+    TurretRotationSetPoint = GetTurretAngle() + angle;
+
+    SetTurretPostion(TurretRotationSetPoint);
+}
+
+void Blitz::BallLauncher::SetLauncherRotationAbsolute(double angle)
+{
+    TurretRotationSetPoint = angle;
+
+    SetTurretPostion(TurretRotationSetPoint);
+}
+
+bool Blitz::BallLauncher::PrimeLauncher()
+{
+    int rpm = CalculateLaunchVelocity(TargetDistance, TARGET_HEIGHT);
+    return SetLauncherSpeed(rpm, BACK_SPIN);
+}
+
+void Blitz::BallLauncher::FeedBalls()
+{
+    if(PrimeLauncher())
+    {
+        //turn on feed motors;
+    }
+}
+
+double Blitz::BallLauncher::GetTopMotorRPM()
+{
+    return TopMotorEncoder.GetVelocity();
+}
+
+double Blitz::BallLauncher::GetBottomMotorRPM()
+{
+    return BottomMotorEncoder.GetVelocity();
+}
+
+void Blitz::BallLauncher::SetTurretPostion(double angle)
+{
+    TurretMotorPID.SetReference(angle, rev::ControlType::kPosition);
+}
+
+double Blitz::BallLauncher::GetTurretAngle()
+{
+    return TurretMotorEncoder.GetPosition();
 }
 
 void Blitz::BallLauncher::SetTopMotorRPM(int rpm)
@@ -43,12 +134,25 @@ void Blitz::BallLauncher::SetBottomMotorRPM(int rpm)
     BottomMotorPID.SetReference(rpm, rev::ControlType::kVelocity);
 }
 
-double Blitz::BallLauncher::GetTopMotorRPM()
+double Blitz::BallLauncher::CalculateLaunchVelocity(double dist, double height)
 {
-    return TopMotorEncoder.GetVelocity();
+    double velocity = 0;//std::Math.sqrt((-4.9*std::Math.pow(dist, 2))/((height-(dist*std::Math.tan(0.610865)))*(std::Math.pow(std::Math.cos(0.610865), 2)))));
+
+    double rpm = velocity;
+
+    return rpm;
 }
 
-double Blitz::BallLauncher::GetBottomMotorRPM()
+bool Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
 {
-    return BottomMotorEncoder.GetVelocity();
+    int topRPM = rpm - (backSpin/2);
+    int bottomRPM = -(rpm + (backSpin/2));
+
+    SetTopMotorRPM(topRPM);
+    SetBottomMotorRPM(bottomRPM);
+
+    bool isTopMotorAtSpeed = (GetTopMotorRPM() > (topRPM - RPM_BUFFER) && GetTopMotorRPM() < (topRPM + RPM_BUFFER));
+    bool isBottomMotorAtSpeed = (GetBottomMotorRPM() > (bottomRPM - RPM_BUFFER) && GetBottomMotorRPM() < (bottomRPM + RPM_BUFFER));
+
+    return isTopMotorAtSpeed && isBottomMotorAtSpeed;
 }
