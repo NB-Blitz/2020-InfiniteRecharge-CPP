@@ -43,8 +43,8 @@ void Blitz::Arcade::Drive(double y, double z)
     else
     {
         LeftFrontMotor.Set(motorValues[0] * MotorDirs[0]);
-        LeftFrontMotor.Set(motorValues[1] * MotorDirs[1]);
-        LeftFrontMotor.Set(motorValues[2] * MotorDirs[2]);
-        LeftFrontMotor.Set(motorValues[3] * MotorDirs[3]);
+        LeftBackMotor.Set(motorValues[1] * MotorDirs[1]);
+        RightFrontMotor.Set(motorValues[2] * MotorDirs[2]);
+        RightBackMotor.Set(motorValues[3] * MotorDirs[3]);
     }
 }
