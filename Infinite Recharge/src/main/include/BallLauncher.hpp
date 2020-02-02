@@ -1,6 +1,6 @@
 #pragma once
 
-#include <frc/WPILib.h>
+#include <frc/DigitalInput.h>
 #include <rev/CANSparkMax.h>
 
 namespace Blitz
