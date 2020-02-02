@@ -63,6 +63,7 @@ bool Blitz::BallLauncher::HomeLauncher()
         }
         else
         {
+            TurretMotorEncoder.SetPosition(0);
             TurretMotor.Set(0);
             Homed = true;
         }
@@ -88,6 +89,20 @@ void Blitz::BallLauncher::SetLauncherRotationAbsolute(double angle)
     TurretRotationSetPoint = angle;
 
     SetTurretPostion(TurretRotationSetPoint);
+}
+
+bool Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
+{
+    int topRPM = rpm - (backSpin/2);
+    int bottomRPM = -(rpm + (backSpin/2));
+
+    SetTopMotorRPM(topRPM);
+    SetBottomMotorRPM(bottomRPM);
+
+    bool isTopMotorAtSpeed = (GetTopMotorRPM() > (topRPM - RPM_BUFFER) && GetTopMotorRPM() < (topRPM + RPM_BUFFER));
+    bool isBottomMotorAtSpeed = (GetBottomMotorRPM() > (bottomRPM - RPM_BUFFER) && GetBottomMotorRPM() < (bottomRPM + RPM_BUFFER));
+
+    return isTopMotorAtSpeed && isBottomMotorAtSpeed;
 }
 
 bool Blitz::BallLauncher::PrimeLauncher()
@@ -136,23 +151,9 @@ void Blitz::BallLauncher::SetBottomMotorRPM(int rpm)
 
 double Blitz::BallLauncher::CalculateLaunchVelocity(double dist, double height)
 {
-    double velocity = 0;//std::Math.sqrt((-4.9*std::Math.pow(dist, 2))/((height-(dist*std::Math.tan(0.610865)))*(std::Math.pow(std::Math.cos(0.610865), 2)))));
+    double velocity = 0;
 
     double rpm = velocity;
 
     return rpm;
-}
-
-bool Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
-{
-    int topRPM = rpm - (backSpin/2);
-    int bottomRPM = -(rpm + (backSpin/2));
-
-    SetTopMotorRPM(topRPM);
-    SetBottomMotorRPM(bottomRPM);
-
-    bool isTopMotorAtSpeed = (GetTopMotorRPM() > (topRPM - RPM_BUFFER) && GetTopMotorRPM() < (topRPM + RPM_BUFFER));
-    bool isBottomMotorAtSpeed = (GetBottomMotorRPM() > (bottomRPM - RPM_BUFFER) && GetBottomMotorRPM() < (bottomRPM + RPM_BUFFER));
-
-    return isTopMotorAtSpeed && isBottomMotorAtSpeed;
 }
