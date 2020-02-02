@@ -1,11 +1,8 @@
 #pragma once
 
-#include <frc/WPILib.h>
 #include <rev/CANSparkMax.h>
 
-#include "DataTypes.hpp"
 #include "DriveReferences.hpp"
-#include "BlitzLogger.hpp"
 
 namespace Blitz
 {
