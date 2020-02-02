@@ -75,5 +75,5 @@ void Robot::TeleopPeriodic()
 }
 
 #ifndef RUNNING_FRC_TESTS
-START_ROBOT_CLASS(Robot)
+int main() { return frc::StartRobot<Robot>(); }
 #endif
