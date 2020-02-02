@@ -28,6 +28,8 @@ double Blitz::DriveTrain::GetMotorOutput(int MotorID)
         case 3 :
             return RightBackEncoder.GetVelocity();
     }
+
+    return 0;
 }
 
 void Blitz::DriveTrain::EnablePID(bool Enabled)
