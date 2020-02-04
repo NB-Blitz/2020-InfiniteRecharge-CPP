@@ -16,8 +16,9 @@ class Robot : public frc::TimedRobot
         void TeleopInit() override;
         void TeleopPeriodic() override;
 
-    private:
-        Blitz::Joysticks::XboxController Xbox;
+    private:       
+        Blitz::Joysticks::XboxController DriverXbox;
+        Blitz::Joysticks::XboxController ManipulatorXbox;
 
         Blitz::Mecanum DriveTrain;
 

@@ -1,7 +1,8 @@
 #include "Robot.h"
 
 Robot::Robot() :
-  Xbox(0),
+  DriverXbox(0),
+  ManipulatorXbox(1),
   DriveTrain()
 {
 
@@ -9,6 +10,9 @@ Robot::Robot() :
 
 void Robot::RobotInit() 
 {
+  //Setup Joysticks (setting toggles/deadbabands/ramprates)
+
+  //Setup Drivetrain
   DriveTrain.Initialize();
 
   DriveTrain.SetMotorDirection(0, LEFT_FRONT_DIR);
@@ -54,20 +58,27 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic()
 {
-  Xbox.update();
+  //update controller values
+  DriverXbox.update();
+  ManipulatorXbox.update();
 
-  double XValue = Xbox.GetLeftX();
-  double YValue = Xbox.GetLeftY();
-  double ZValue = Xbox.GetRightX();
+  //Manipulator Controls
 
+  //Drive Controls
+  double XValue = DriverXbox.GetLeftX();
+  double YValue = DriverXbox.GetLeftY();
+  double ZValue = DriverXbox.GetRightX();
+
+  //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
 
-
+  //Output Motor Speeds
   SmartDashboard::PutNumber("DriveMotor 1 Speed", DriveTrain.GetMotorOutput(0));
   SmartDashboard::PutNumber("DriveMotor 2 Speed", DriveTrain.GetMotorOutput(1));
   SmartDashboard::PutNumber("DriveMotor 3 Speed", DriveTrain.GetMotorOutput(2));
   SmartDashboard::PutNumber("DriveMotor 4 Speed", DriveTrain.GetMotorOutput(3));
   
+  //Output Motor Setpoints
   SmartDashboard::PutNumber("DriveMotor 1 SetPoint", DriveTrain.GetMotorSetPoint(0));
   SmartDashboard::PutNumber("DriveMotor 2 SetPoint", DriveTrain.GetMotorSetPoint(1));
   SmartDashboard::PutNumber("DriveMotor 3 SetPoint", DriveTrain.GetMotorSetPoint(2));
