@@ -1,14 +1,20 @@
 #include "Robot.h"
 
 Robot::Robot() :
-  Xbox(0),
-  DriveTrain()
+  DriverXbox(0),
+  ManipulatorXbox(1),
+  DriveTrain(),
+  Launcher()
 {
 
 }
 
 void Robot::RobotInit() 
 {
+  //Setup Joysticks
+  ManipulatorXbox.EnableAButtonToggle(true);
+
+  //Setup Drivetrain
   DriveTrain.Initialize();
 
   DriveTrain.SetMotorDirection(0, LEFT_FRONT_DIR);
@@ -54,19 +60,51 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic()
 {
-  Xbox.update();
+  //update controller values
+  DriverXbox.update();
+  ManipulatorXbox.update();
 
-  double XValue = Xbox.GetLeftX();
-  double YValue = Xbox.GetLeftY();
-  double ZValue = Xbox.GetRightX();
+  //Manipulator Controls
+  bool PrimeShooter = ManipulatorXbox.GetLeftTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
+  bool ShootBalls = ManipulatorXbox.GetRightTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
+  bool AutoAimTurret = ManipulatorXbox.GetAButton();
+  double ManualAimLauncher = ManipulatorXbox.GetLeftX();
 
+  //Drive Controls
+  double XValue = DriverXbox.GetLeftX();
+  double YValue = DriverXbox.GetLeftY();
+  double ZValue = DriverXbox.GetRightX();
+
+  //Run Ball Launcher
+  if(PrimeShooter)
+  {
+    Launcher.PrimeLauncher();
+  }
+
+  if(ShootBalls)
+  {
+    Launcher.FeedBalls();
+  }
+
+  if(AutoAimTurret)
+  {
+    //SetTurret Angle automatically
+  }
+  else
+  {
+    Launcher.RotateLauncherSpeed(ManualAimLauncher);
+  }
+
+  //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
 
+  //Output Motor Speeds
   SmartDashboard::PutNumber("DriveMotor 1 Speed", DriveTrain.GetMotorOutput(0));
   SmartDashboard::PutNumber("DriveMotor 2 Speed", DriveTrain.GetMotorOutput(1));
   SmartDashboard::PutNumber("DriveMotor 3 Speed", DriveTrain.GetMotorOutput(2));
   SmartDashboard::PutNumber("DriveMotor 4 Speed", DriveTrain.GetMotorOutput(3));
-
+  
+  //Output Motor Setpoints
   SmartDashboard::PutNumber("DriveMotor 1 SetPoint", DriveTrain.GetMotorSetPoint(0));
   SmartDashboard::PutNumber("DriveMotor 2 SetPoint", DriveTrain.GetMotorSetPoint(1));
   SmartDashboard::PutNumber("DriveMotor 3 SetPoint", DriveTrain.GetMotorSetPoint(2));

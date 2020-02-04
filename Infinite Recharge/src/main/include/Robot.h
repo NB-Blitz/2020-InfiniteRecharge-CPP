@@ -3,6 +3,7 @@
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <BlitzLib/BlitzLib.hpp>
+#include "BallLauncher.hpp"
 
 
 class Robot : public frc::TimedRobot
@@ -17,9 +18,14 @@ class Robot : public frc::TimedRobot
         void TeleopPeriodic() override;
 
     private:
-        Blitz::Joysticks::XboxController Xbox;
+        Blitz::Joysticks::XboxController DriverXbox;
+        Blitz::Joysticks::XboxController ManipulatorXbox;
 
         Blitz::Mecanum DriveTrain;
+
+        Blitz::BallLauncher Launcher;
+
+        static constexpr double TRIGGER_ACTIVATION_THRESHOLD = .5;
 
         static constexpr double LEFT_FRONT_FGAIN = 0;
         static constexpr double LEFT_FRONT_PGAIN = 0;

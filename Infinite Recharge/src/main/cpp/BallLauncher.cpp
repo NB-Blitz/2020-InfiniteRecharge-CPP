@@ -91,6 +91,11 @@ void Blitz::BallLauncher::SetLauncherRotationAbsolute(double angle)
     SetTurretPostion(TurretRotationSetPoint);
 }
 
+void Blitz::BallLauncher::RotateLauncherSpeed(double speed)
+{
+    TurretMotor.Set(speed);
+}
+
 bool Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
 {
     int topRPM = rpm - (backSpin/2);
@@ -113,7 +118,8 @@ bool Blitz::BallLauncher::PrimeLauncher()
 
 void Blitz::BallLauncher::FeedBalls()
 {
-    if(PrimeLauncher())
+    bool LauncherReady = PrimeLauncher();
+    if(LauncherReady)
     {
         //turn on feed motors;
     }

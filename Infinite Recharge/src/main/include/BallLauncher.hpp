@@ -15,6 +15,7 @@ namespace Blitz
             void SetTargetDistance(double dist);
             void SetLauncherRotationRelative(double angle);
             void SetLauncherRotationAbsolute(double angle);
+            void RotateLauncherSpeed(double speed);
             
             bool SetLauncherSpeed(int rpm, int backSpin);
 
