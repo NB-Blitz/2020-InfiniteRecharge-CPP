@@ -83,6 +83,27 @@ void Robot::TeleopPeriodic()
   SmartDashboard::PutNumber("DriveMotor 2 SetPoint", DriveTrain.GetMotorSetPoint(1));
   SmartDashboard::PutNumber("DriveMotor 3 SetPoint", DriveTrain.GetMotorSetPoint(2));
   SmartDashboard::PutNumber("DriveMotor 4 SetPoint", DriveTrain.GetMotorSetPoint(3));
+
+  std::string TriggerPressed;
+  std::string BumperPressed;
+
+  if (ManipulatorXbox.GetLeftTrigger()){
+    TriggerPressed = "Muy Bien";
+  }
+  else {
+    TriggerPressed = "No Bueno";
+  }
+
+  if (ManipulatorXbox.GetLeftBumper()){
+    BumperPressed = "Muy Bien";
+  }
+  else {
+    BumperPressed = "No Bueno";
+  }
+
+  frc::SmartDashboard::PutString("Left Trigger", TriggerPressed);
+  frc::SmartDashboard::PutString("Left Bumper", BumperPressed);
+
 }
 
 #ifndef RUNNING_FRC_TESTS
