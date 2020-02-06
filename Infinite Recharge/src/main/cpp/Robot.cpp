@@ -74,6 +74,7 @@ void Robot::TeleopPeriodic()
   //Run Feeder
   if(ShootBalls)
   {
+    //Add code to ramp up launcher motors
     BallStorage.FeedShooter();
   }
   else
