@@ -3,6 +3,7 @@
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <BlitzLib/BlitzLib.hpp>
+#include "BallManager.hpp"
 
 
 class Robot : public frc::TimedRobot
@@ -21,6 +22,10 @@ class Robot : public frc::TimedRobot
         Blitz::Joysticks::XboxController ManipulatorXbox;
 
         Blitz::Mecanum DriveTrain;
+
+        Blitz::BallManager BallStorage;
+        
+        static constexpr double TRIGGER_ACTIVATION_THRESHOLD = .5;
 
         static constexpr double LEFT_FRONT_FGAIN = 0;
         static constexpr double LEFT_FRONT_PGAIN = 0;

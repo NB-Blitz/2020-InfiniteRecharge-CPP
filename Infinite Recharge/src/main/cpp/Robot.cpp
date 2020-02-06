@@ -3,7 +3,8 @@
 Robot::Robot() :
   DriverXbox(0),
   ManipulatorXbox(1),
-  DriveTrain()
+  DriveTrain(),
+  BallStorage()
 {
 
 }
@@ -63,11 +64,22 @@ void Robot::TeleopPeriodic()
   ManipulatorXbox.update();
 
   //Manipulator Controls
+  bool ShootBalls = ManipulatorXbox.GetRightTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
 
   //Drive Controls
   double XValue = DriverXbox.GetLeftX();
   double YValue = DriverXbox.GetLeftY();
   double ZValue = DriverXbox.GetRightX();
+
+  //Run Feeder
+  if(ShootBalls)
+  {
+    BallStorage.FeedShooter();
+  }
+  else
+  {
+    BallStorage.IntakeBalls();
+  }
 
   //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
