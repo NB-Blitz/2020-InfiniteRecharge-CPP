@@ -116,6 +116,11 @@ bool Blitz::BallLauncher::PrimeLauncher()
     return SetLauncherSpeed(rpm, BACK_SPIN);
 }
 
+bool Blitz::BallLauncher::PrimeLauncher(int rpm)
+{
+    return SetLauncherSpeed(rpm, BACK_SPIN);
+}
+
 void Blitz::BallLauncher::FeedBalls()
 {
     bool LauncherReady = PrimeLauncher();

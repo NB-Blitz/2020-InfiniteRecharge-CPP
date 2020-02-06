@@ -78,7 +78,7 @@ void Robot::TeleopPeriodic()
   //Run Ball Launcher
   if(PrimeShooter)
   {
-    Launcher.PrimeLauncher();
+    Launcher.PrimeLauncher(3000);
   }
 
   if(ShootBalls)
