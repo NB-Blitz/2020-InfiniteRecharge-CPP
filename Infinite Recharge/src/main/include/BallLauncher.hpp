@@ -1,7 +1,9 @@
 #pragma once
 
 #include <frc/DigitalInput.h>
+#include <frc/I2C.h>
 #include <rev/CANSparkMax.h>
+
 
 namespace Blitz
 {
@@ -35,6 +37,8 @@ namespace Blitz
 
             double CalculateLaunchVelocity(double dist, double height);
 
+            double GetLidarDistance();
+
             double TargetDistance = 0;
             double TurretRotationSetPoint = 0;
 
@@ -55,6 +59,13 @@ namespace Blitz
             const double LARGE_GEAR_TEETH = 154;
             const double COUNTS_PER_TURRET_REVOLUTION = COUNTS_PER_MOTOR_REVOLUTION * (LARGE_GEAR_TEETH/SMALL_GEAR_TEETH);
             const double COUNTS_PER_DEGREE = COUNTS_PER_TURRET_REVOLUTION / 360;
+
+            const double Turret_ANGLE_THRESHOLD;
+
+            //Lidar Constants
+            const uint8_t LIDAR_ADDRESS = 0x62;
+            const uint8_t LIDAR_ADDR[4] {0x00, 0x04, 0x01, 0x8f};
+            
 
             //Motor IDs
             const int TOP_MOTOR_CAN_ID = 5;
@@ -89,6 +100,8 @@ namespace Blitz
             const int RPM_BUFFER = 100;
             
             frc::DigitalInput TurretHomeSwitch;
+
+            frc::I2C TurretLidar;
 
             //Turret Motor
             rev::CANSparkMax TurretMotor{TURRET_MOTOR_CAN_ID, rev::CANSparkMax::MotorType::kBrushed};
