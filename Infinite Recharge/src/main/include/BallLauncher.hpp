@@ -22,6 +22,7 @@ namespace Blitz
             bool SetLauncherSpeed(int rpm, int backSpin);
 
             bool PrimeLauncher();       //Ramp Up launch Motors
+            bool PrimeLauncher(int rpm);       //Ramp Up launch Motors to rpm
             void FeedBalls();           //Feed Balls into Launcher
 
             double GetTopMotorRPM();
