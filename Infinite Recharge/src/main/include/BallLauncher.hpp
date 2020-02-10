@@ -61,7 +61,7 @@ namespace Blitz
             const double COUNTS_PER_TURRET_REVOLUTION = COUNTS_PER_MOTOR_REVOLUTION * (LARGE_GEAR_TEETH/SMALL_GEAR_TEETH);
             const double COUNTS_PER_DEGREE = COUNTS_PER_TURRET_REVOLUTION / 360;
 
-            const double Turret_ANGLE_THRESHOLD;
+            const double TURRET_ANGLE_THRESHOLD = 5;
 
             //Lidar Constants
             const uint8_t LIDAR_ADDRESS = 0x62;

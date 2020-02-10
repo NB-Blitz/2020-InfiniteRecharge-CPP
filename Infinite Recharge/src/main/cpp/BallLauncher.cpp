@@ -2,7 +2,7 @@
 
 Blitz::BallLauncher::BallLauncher() :
     TurretHomeSwitch(1),
-    Lidar(frc::I2C::kOnboard, LIDAR_ADDRESS)
+    TurretLidar(frc::I2C::kOnboard, LIDAR_ADDRESS)
 {
     TurretMotorPID.SetP(TURRET_PGAIN);
     TurretMotorPID.SetI(TURRET_IGAIN);
@@ -147,7 +147,7 @@ void Blitz::BallLauncher::SetTurretPostion(double angle)
 
     double CurrentAngle = TurretMotorEncoder.GetPosition();
 
-    if(CurrentAngle <= (angle + Turret_ANGLE_THRESHOLD) && CurrentAngle >= (angle - Turret_ANGLE_THRESHOLD))
+    if(CurrentAngle <= (angle + TURRET_ANGLE_THRESHOLD) && CurrentAngle >= (angle - TURRET_ANGLE_THRESHOLD))
     {
         SetTargetDistance(GetLidarDistance());
     }
@@ -181,13 +181,13 @@ double Blitz::BallLauncher::GetLidarDistance()
 {
     double DistanceCM = 0; //Distance in centimeters
 
-    Lidar->WriteBulk(LIDAR_ADDR, 2);
-    Lidar->WriteBulk(&LIDAR_ADDR[2], 1)
+    TurretLidar->WriteBulk(LIDAR_ADDR, 2);
+    TurretLidar->WriteBulk(&LIDAR_ADDR[2], 1)
 
     uint8_t data[2]; 
 
-    Lidar->WriteBulk(&LIDAR_ADDR[3], 1);
-    Lidar->ReadOnly(2, data);
+    TurretLidar->WriteBulk(&LIDAR_ADDR[3], 1);
+    TurretLidar->ReadOnly(2, data);
 
     DistanceCM =  ((data[0] * 256) + data[0]);
 
