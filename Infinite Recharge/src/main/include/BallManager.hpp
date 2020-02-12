@@ -2,7 +2,7 @@
 
 #include <frc/DigitalInput.h>
 #include <rev/CANSparkMax.h>
-#include <ctre/Pheonix.h>
+#include <ctre/Phoenix.h>
 
 namespace Blitz
 {
@@ -14,6 +14,10 @@ namespace Blitz
             void IntakeBalls();
 
             void FeedShooter();
+
+            void Puke();
+
+            void StopIntake();
 
             bool IsFull();
 
@@ -38,7 +42,7 @@ namespace Blitz
 
             const double MOTOR_OFF = 0;
             const double INTAKE_SPEED = 1;
-            const double STORAGE_INTAKE_SPEED = .25;
+            const double STORAGE_INTAKE_SPEED = .5;
             const double STORAGE_SHOOT_SPEED = 1;
             const double LAUNCHER_FEED_SPEED = 1;
     };

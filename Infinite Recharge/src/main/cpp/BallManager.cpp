@@ -31,7 +31,7 @@ void Blitz::BallManager::IntakeBalls()
         MainFeederMotor.Set(MOTOR_OFF);
     }
 
-    LauncherFeedMotor.Set(MOTOR_OFF);
+    LauncherFeedMotor.Set(ControlMode::PercentOutput, MOTOR_OFF);
     
 }
 
@@ -39,12 +39,26 @@ void Blitz::BallManager::FeedShooter()
 {
     IntakeMotor.Set(INTAKE_SPEED);
     MainFeederMotor.Set(STORAGE_SHOOT_SPEED);
-    LauncherFeedMotor.Set(LAUNCHER_FEED_SPEED);
+    LauncherFeedMotor.Set(ControlMode::PercentOutput, LAUNCHER_FEED_SPEED);
+}
+
+void Blitz::BallManager::Puke()
+{
+    IntakeMotor.Set(-INTAKE_SPEED);
+    MainFeederMotor.Set(-STORAGE_SHOOT_SPEED);
+    LauncherFeedMotor.Set(ControlMode::PercentOutput, -LAUNCHER_FEED_SPEED);
+}
+
+void Blitz::BallManager::StopIntake()
+{
+    IntakeMotor.Set(MOTOR_OFF);
+    MainFeederMotor.Set(MOTOR_OFF);
+    LauncherFeedMotor.Set(ControlMode::PercentOutput, MOTOR_OFF);
 }
 
 
 bool Blitz::BallManager::IsFull()
 {
-    return StorageFullSwitch.Get()
+    return StorageFullSwitch.Get();
 }
 

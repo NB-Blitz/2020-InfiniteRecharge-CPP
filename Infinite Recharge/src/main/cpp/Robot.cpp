@@ -65,6 +65,8 @@ void Robot::TeleopPeriodic()
 
   //Manipulator Controls
   bool ShootBalls = ManipulatorXbox.GetRightTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
+  bool IntakeBalls = ManipulatorXbox.GetBButton();
+  bool PukeBalls = ManipulatorXbox.GetXButton();
 
   //Drive Controls
   double XValue = DriverXbox.GetLeftX();
@@ -72,12 +74,16 @@ void Robot::TeleopPeriodic()
   double ZValue = DriverXbox.GetRightX();
 
   //Run Feeder
-  if(ShootBalls)
+  if(PukeBalls)
+  {
+    BallStorage.Puke();
+  }
+  else if(ShootBalls)
   {
     //Add code to ramp up launcher motors
     BallStorage.FeedShooter();
   }
-  else
+  else if(IntakeBalls)
   {
     BallStorage.IntakeBalls();
   }
