@@ -2,15 +2,16 @@
 
 Blitz::BallLauncher::BallLauncher() :
     TurretHomeSwitch(1),
+    LauncherFeedMotor(LAUNCHER_FEEDER_MOTOR_CAN_ID)
     TurretLidar(frc::I2C::kOnboard, LIDAR_ADDRESS)
 {
-    TurretMotorPID.SetP(TURRET_PGAIN);
-    TurretMotorPID.SetI(TURRET_IGAIN);
-    TurretMotorPID.SetD(TURRET_DGAIN);
-    TurretMotorPID.SetIZone(TURRET_IZONE);
-    TurretMotorPID.SetFF(TURRET_FEED_FORWARD);
-    TurretMotorPID.SetOutputRange(MIN_OUTPUT, MAX_OUTPUT);
-    TurretMotorEncoder.SetPositionConversionFactor(TURRET_POSITION_CONVERSION);
+    // TurretMotorPID.SetP(TURRET_PGAIN);
+    // TurretMotorPID.SetI(TURRET_IGAIN);
+    // TurretMotorPID.SetD(TURRET_DGAIN);
+    // TurretMotorPID.SetIZone(TURRET_IZONE);
+    // TurretMotorPID.SetFF(TURRET_FEED_FORWARD);
+    // TurretMotorPID.SetOutputRange(MIN_OUTPUT, MAX_OUTPUT);
+    // TurretMotorEncoder.SetPositionConversionFactor(TURRET_POSITION_CONVERSION);
 
     TopMotorPID.SetP(TOP_PGAIN);
     TopMotorPID.SetI(TOP_IGAIN);
@@ -64,7 +65,7 @@ bool Blitz::BallLauncher::HomeLauncher()
         }
         else
         {
-            TurretMotorEncoder.SetPosition(0);
+            //TurretMotorEncoder.SetPosition(0);
             TurretMotor.Set(0);
             Homed = true;
         }
@@ -99,8 +100,8 @@ void Blitz::BallLauncher::RotateLauncherSpeed(double speed)
 
 bool Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
 {
-    int topRPM = rpm - (backSpin/2);
-    int bottomRPM = -(rpm + (backSpin/2));
+    int topRPM = -(rpm - (backSpin/2));
+    int bottomRPM = (rpm + (backSpin/2));
 
     SetTopMotorRPM(topRPM);
     SetBottomMotorRPM(bottomRPM);
@@ -111,10 +112,18 @@ bool Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
     return isTopMotorAtSpeed && isBottomMotorAtSpeed;
 }
 
-bool Blitz::BallLauncher::PrimeLauncher()
+bool Blitz::BallLauncher::PrimeLauncher(bool prime)
 {
     int rpm = CalculateLaunchVelocity(TargetDistance, TARGET_HEIGHT);
-    return SetLauncherSpeed(rpm, BACK_SPIN);
+    
+    if(prime)
+    {
+        return SetLauncherSpeed(2500, BACK_SPIN);
+    }
+    else
+    {
+        return SetLauncherSpeed(0, 0);
+    }
 }
 
 bool Blitz::BallLauncher::PrimeLauncher(int rpm)
@@ -122,13 +131,26 @@ bool Blitz::BallLauncher::PrimeLauncher(int rpm)
     return SetLauncherSpeed(rpm, BACK_SPIN);
 }
 
-void Blitz::BallLauncher::FeedBalls()
+void Blitz::BallLauncher::FeedBalls(bool prime)
 {
-    bool LauncherReady = PrimeLauncher();
-    if(LauncherReady)
+    bool LauncherReady = PrimeLauncher(prime);
+    if(prime)
     {
-        //turn on feed motors;
+        if(LauncherReady)
+        {
+            LauncherFeedMotor.Set(ControlMode::PercentOutput, 1);
+            StorageFeedMotor.Set(-1);
+        }
     }
+    else
+    {
+        if(LauncherReady)
+        {
+            LauncherFeedMotor.Set(ControlMode::PercentOutput, 0);
+            StorageFeedMotor.Set(0);
+        }
+    }
+    
 }
 
 double Blitz::BallLauncher::GetTopMotorRPM()
@@ -155,7 +177,7 @@ void Blitz::BallLauncher::SetTurretPostion(double angle)
 
 double Blitz::BallLauncher::GetTurretAngle()
 {
-    return TurretMotorEncoder.GetPosition();
+    return 0;//TurretMotorEncoder.GetPosition();
 }
 
 void Blitz::BallLauncher::SetTopMotorRPM(int rpm)

@@ -3,6 +3,7 @@
 #include <frc/DigitalInput.h>
 #include <frc/I2C.h>
 #include <rev/CANSparkMax.h>
+#include <ctre/Phoenix.h>
 
 
 namespace Blitz
@@ -21,9 +22,9 @@ namespace Blitz
             
             bool SetLauncherSpeed(int rpm, int backSpin);
 
-            bool PrimeLauncher();       //Ramp Up launch Motors
+            bool PrimeLauncher(bool prime);       //Ramp Up launch Motors
             bool PrimeLauncher(int rpm);       //Ramp Up launch Motors to rpm
-            void FeedBalls();           //Feed Balls into Launcher
+            void FeedBalls(bool prime);           //Feed Balls into Launcher
 
             double GetTopMotorRPM();
             double GetBottomMotorRPM();
@@ -72,6 +73,8 @@ namespace Blitz
             const int TOP_MOTOR_CAN_ID = 5;
             const int BOTTOM_MOTOR_CAN_ID = 6;
             const int TURRET_MOTOR_CAN_ID = 7;
+            const int STORAGE_FEEDER_MOTOR_CAN_ID = 9;
+            const int LAUNCHER_FEEDER_MOTOR_CAN_ID = 8;
 
             //Motor Constants
             const double TURRET_PGAIN = 0;
@@ -107,9 +110,9 @@ namespace Blitz
             //Turret Motor
             rev::CANSparkMax TurretMotor{TURRET_MOTOR_CAN_ID, rev::CANSparkMax::MotorType::kBrushed};
             
-            rev::CANPIDController TurretMotorPID = TurretMotor.GetPIDController();
+            //rev::CANPIDController TurretMotorPID = TurretMotor.GetPIDController();
 
-            rev::CANEncoder TurretMotorEncoder = TurretMotor.GetEncoder(rev::CANEncoder::EncoderType::kHallSensor, 1); //set the encoder type and tells get position to output counts instead of RPM
+            //rev::CANEncoder TurretMotorEncoder = TurretMotor.GetEncoder(rev::CANEncoder::EncoderType::kHallSensor, 1); //set the encoder type and tells get position to output counts instead of RPM
 
             //Launcher Motors
             rev::CANSparkMax TopMotor{TOP_MOTOR_CAN_ID, rev::CANSparkMax::MotorType::kBrushless};
@@ -120,6 +123,10 @@ namespace Blitz
 
             rev::CANEncoder TopMotorEncoder = TopMotor.GetEncoder();
             rev::CANEncoder BottomMotorEncoder = BottomMotor.GetEncoder();
+
+            rev::CANSparkMax StorageFeedMotor{STORAGE_FEEDER_MOTOR_CAN_ID, rev::CANSparkMax::MotorType::kBrushed}; 
+
+            TalonSRX LauncherFeedMotor;
 
     };
 }

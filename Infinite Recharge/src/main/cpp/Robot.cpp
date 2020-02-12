@@ -76,27 +76,15 @@ void Robot::TeleopPeriodic()
   double ZValue = DriverXbox.GetRightX();
 
   //Run Ball Launcher
-  if(PrimeShooter)
-  {
-    Launcher.PrimeLauncher(3000);
-  }
+  bool ReadyToShoot = Launcher.PrimeLauncher(PrimeShooter);
 
-  if(ShootBalls)
-  {
-    Launcher.FeedBalls();
-  }
-
-  if(AutoAimTurret)
-  {
-    //SetTurret Angle automatically
-  }
-  else
-  {
-    Launcher.RotateLauncherSpeed(ManualAimLauncher);
-  }
+  //Rotate Turret Manually
+  Launcher.RotateLauncherSpeed(ManualAimLauncher);
 
   //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
+
+  //Joystick outputs
 
   //Output Motor Speeds
   SmartDashboard::PutNumber("DriveMotor 1 Speed", DriveTrain.GetMotorOutput(0));
