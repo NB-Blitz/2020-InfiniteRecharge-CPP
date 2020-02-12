@@ -3,7 +3,6 @@
 Blitz::BallLauncher::BallLauncher() :
     TurretHomeSwitch(1),
     LauncherFeedMotor(LAUNCHER_FEEDER_MOTOR_CAN_ID)
-    TurretLidar(frc::I2C::kOnboard, LIDAR_ADDRESS)
 {
     // TurretMotorPID.SetP(TURRET_PGAIN);
     // TurretMotorPID.SetI(TURRET_IGAIN);
@@ -79,18 +78,18 @@ void Blitz::BallLauncher::SetTargetDistance(double dist)
     TargetDistance = dist;
 }
 
-void Blitz::BallLauncher::SetLauncherRotationRelative(double angle)
+bool Blitz::BallLauncher::SetLauncherRotationRelative(double angle)
 {
     TurretRotationSetPoint = GetTurretAngle() + angle;
 
-    SetTurretPostion(TurretRotationSetPoint);
+    return SetTurretPostion(TurretRotationSetPoint);
 }
 
-void Blitz::BallLauncher::SetLauncherRotationAbsolute(double angle)
+bool Blitz::BallLauncher::SetLauncherRotationAbsolute(double angle)
 {
     TurretRotationSetPoint = angle;
 
-    SetTurretPostion(TurretRotationSetPoint);
+    return SetTurretPostion(TurretRotationSetPoint);
 }
 
 void Blitz::BallLauncher::RotateLauncherSpeed(double speed)
@@ -118,7 +117,7 @@ bool Blitz::BallLauncher::PrimeLauncher(bool prime)
     
     if(prime)
     {
-        return SetLauncherSpeed(2500, BACK_SPIN);
+        return SetLauncherSpeed(rpm, BACK_SPIN);
     }
     else
     {
@@ -150,7 +149,6 @@ void Blitz::BallLauncher::FeedBalls(bool prime)
             StorageFeedMotor.Set(0);
         }
     }
-    
 }
 
 double Blitz::BallLauncher::GetTopMotorRPM()
@@ -163,16 +161,13 @@ double Blitz::BallLauncher::GetBottomMotorRPM()
     return BottomMotorEncoder.GetVelocity();
 }
 
-void Blitz::BallLauncher::SetTurretPostion(double angle)
+bool Blitz::BallLauncher::SetTurretPostion(double angle)
 {
-    TurretMotorPID.SetReference(angle, rev::ControlType::kPosition);
+    //TurretMotorPID.SetReference(angle, rev::ControlType::kPosition);
 
-    double CurrentAngle = TurretMotorEncoder.GetPosition();
+    double CurrentAngle = 0; //TurretMotorEncoder.GetPosition();
 
-    if(CurrentAngle <= (angle + TURRET_ANGLE_THRESHOLD) && CurrentAngle >= (angle - TURRET_ANGLE_THRESHOLD))
-    {
-        SetTargetDistance(GetLidarDistance());
-    }
+    return (CurrentAngle <= (angle + TURRET_ANGLE_THRESHOLD)) && (CurrentAngle >= (angle - TURRET_ANGLE_THRESHOLD));
 }
 
 double Blitz::BallLauncher::GetTurretAngle()
@@ -192,26 +187,11 @@ void Blitz::BallLauncher::SetBottomMotorRPM(int rpm)
 
 double Blitz::BallLauncher::CalculateLaunchVelocity(double dist, double height)
 {
+    //add launch velocity calculation
     double velocity = 0;
 
+    //add velocity to motor rpm calculation
     double rpm = velocity;
 
     return rpm;
-}
-
-double Blitz::BallLauncher::GetLidarDistance()
-{
-    double DistanceCM = 0; //Distance in centimeters
-
-    TurretLidar->WriteBulk(LIDAR_ADDR, 2);
-    TurretLidar->WriteBulk(&LIDAR_ADDR[2], 1)
-
-    uint8_t data[2]; 
-
-    TurretLidar->WriteBulk(&LIDAR_ADDR[3], 1);
-    TurretLidar->ReadOnly(2, data);
-
-    DistanceCM =  ((data[0] * 256) + data[0]);
-
-    return ((DistanceCM/2.54)/12); //Convert centimeters to inches then inches to feet
 }

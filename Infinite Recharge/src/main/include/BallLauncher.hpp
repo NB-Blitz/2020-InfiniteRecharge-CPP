@@ -1,7 +1,6 @@
 #pragma once
 
 #include <frc/DigitalInput.h>
-#include <frc/I2C.h>
 #include <rev/CANSparkMax.h>
 #include <ctre/Phoenix.h>
 
@@ -16,8 +15,8 @@ namespace Blitz
             bool HomeLauncher();        //Moves turret to home and resets the encoder
 
             void SetTargetDistance(double dist);
-            void SetLauncherRotationRelative(double angle);
-            void SetLauncherRotationAbsolute(double angle);
+            bool SetLauncherRotationRelative(double angle);
+            bool SetLauncherRotationAbsolute(double angle);
             void RotateLauncherSpeed(double speed);
             
             bool SetLauncherSpeed(int rpm, int backSpin);
@@ -31,15 +30,13 @@ namespace Blitz
 
 
         private:
-            void SetTurretPostion(double angle);
+            bool SetTurretPostion(double angle);
             double GetTurretAngle();
 
             void SetTopMotorRPM(int rpm);
             void SetBottomMotorRPM(int rpm);
 
             double CalculateLaunchVelocity(double dist, double height);
-
-            double GetLidarDistance();
 
             double TargetDistance = 0;
             double TurretRotationSetPoint = 0;
@@ -63,10 +60,6 @@ namespace Blitz
             const double COUNTS_PER_DEGREE = COUNTS_PER_TURRET_REVOLUTION / 360;
 
             const double TURRET_ANGLE_THRESHOLD = 5;
-
-            //Lidar Constants
-            const uint8_t LIDAR_ADDRESS = 0x62;
-            const uint8_t LIDAR_ADDR[4] {0x00, 0x04, 0x01, 0x8f};
             
 
             //Motor IDs
@@ -104,8 +97,6 @@ namespace Blitz
             const int RPM_BUFFER = 100;
             
             frc::DigitalInput TurretHomeSwitch;
-
-            frc::I2C TurretLidar;
 
             //Turret Motor
             rev::CANSparkMax TurretMotor{TURRET_MOTOR_CAN_ID, rev::CANSparkMax::MotorType::kBrushed};

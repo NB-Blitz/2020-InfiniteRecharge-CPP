@@ -76,10 +76,34 @@ void Robot::TeleopPeriodic()
   double ZValue = DriverXbox.GetRightX();
 
   //Run Ball Launcher
-  bool ReadyToShoot = Launcher.PrimeLauncher(PrimeShooter);
+  bool ReadyToShoot = false;
+  if(PrimeShooter)
+  {
+    ReadyToShoot = Launcher.PrimeLauncher(2500);
+  }
+  else
+  {
+    ReadyToShoot = Launcher.PrimeLauncher(0);
+  }
+
+  if(ReadyToShoot && ShootBalls)
+  {
+    //Feed Balls
+  }
+  else
+  {
+    //Stop Feeding Balls
+  }
 
   //Rotate Turret Manually
-  Launcher.RotateLauncherSpeed(ManualAimLauncher);
+  if(!AutoAimTurret)
+  {
+    Launcher.RotateLauncherSpeed(ManualAimLauncher);
+  }
+  else
+  {
+    //Automatically Aim the turret
+  }
 
   //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
