@@ -56,7 +56,9 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit() 
 {
+  //Initialize SmartDashboard Values
   SmartDashboard::PutNumber("Shooter RPM", 0);
+  
 }
 
 void Robot::TeleopPeriodic()
@@ -70,7 +72,6 @@ void Robot::TeleopPeriodic()
   bool ShootBalls = ManipulatorXbox.GetRightTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
   bool AutoAimTurret = ManipulatorXbox.GetAButton();
   double ManualAimLauncher = ManipulatorXbox.GetLeftX();
-
   bool IntakeBalls = ManipulatorXbox.GetBButton();
   bool PukeBalls = ManipulatorXbox.GetXButton();
 
@@ -120,7 +121,22 @@ void Robot::TeleopPeriodic()
   //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
 
-  //Joystick outputs
+  //Manipulator Joystick outputs
+  SmartDashboard::PutBoolean("Manipulator: Prime Shooter", PrimeShooter);
+  SmartDashboard::PutBoolean("Manipulator: Shoot Balls", ShootBalls);
+  SmartDashboard::PutBoolean("Manipulator: Automatic Turret", AutoAimTurret);
+  SmartDashboard::PutBoolean("Manipulator: Intake Balls", IntakeBalls);
+  SmartDashboard::PutBoolean("Manipulator: Puke Balls", PukeBalls);
+  SmartDashboard::PutNumber("Manipulator: Manual Turret Speed", ManualAimLauncher);
+  
+  //Driver Joystick outputs
+  SmartDashboard::PutNumber("Driver: X-Value", XValue);
+  SmartDashboard::PutNumber("Driver: Y-Value", YValue);
+  SmartDashboard::PutNumber("Driver: Z-Value", ZValue);
+
+  //Launcher outputs
+  SmartDashboard::PutNumber("Top Motor RPM", Launcher.GetTopMotorRPM());
+  SmartDashboard::PutNumber("Bottom Motor RPM", Launcher.GetBottomMotorRPM());
 
   //Output Motor Speeds
   SmartDashboard::PutNumber("DriveMotor 1 Speed", DriveTrain.GetMotorOutput(0));
