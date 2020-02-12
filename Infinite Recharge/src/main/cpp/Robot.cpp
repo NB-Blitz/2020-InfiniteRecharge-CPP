@@ -4,7 +4,7 @@ Robot::Robot() :
   DriverXbox(0),
   ManipulatorXbox(1),
   DriveTrain(),
-  BallStorage()
+  BallStorage(),
   Launcher()
 {
 
@@ -70,6 +70,7 @@ void Robot::TeleopPeriodic()
   bool ShootBalls = ManipulatorXbox.GetRightTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
   bool AutoAimTurret = ManipulatorXbox.GetAButton();
   double ManualAimLauncher = ManipulatorXbox.GetLeftX();
+
   bool IntakeBalls = ManipulatorXbox.GetBButton();
   bool PukeBalls = ManipulatorXbox.GetXButton();
 
@@ -94,14 +95,23 @@ void Robot::TeleopPeriodic()
   {
     BallStorage.Puke();
   }
-  else if(ShootBalls)
+  else if(ShootBalls && ReadyToShoot)
   {
-    //Add code to ramp up launcher motors
     BallStorage.FeedShooter();
   }
   else if(IntakeBalls)
   {
     BallStorage.IntakeBalls();
+  }
+
+  //Rotate Turret
+  if(!AutoAimTurret)
+  {
+    Launcher.RotateLauncherSpeed(ManualAimLauncher);
+  }
+  else
+  {
+    //Automatically Aim the turret
   }
 
   //Drive Robot
