@@ -13,7 +13,7 @@ namespace Blitz
             static constexpr double RAMP_RATE = .4;
 
             static constexpr double ENCODER_UNITS_PER_ROTATION = 42;
-            static constexpr double MAX_RPM = 5600;
+            static constexpr double MAX_RPM = 5500;
 
             static constexpr double MAX_OUPUT = 1;
     };

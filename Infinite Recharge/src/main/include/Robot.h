@@ -4,6 +4,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <BlitzLib/BlitzLib.hpp>
 #include "BallManager.hpp"
+#include "BallLauncher.hpp"
 
 
 class Robot : public frc::TimedRobot
@@ -24,7 +25,8 @@ class Robot : public frc::TimedRobot
         Blitz::Mecanum DriveTrain;
 
         Blitz::BallManager BallStorage;
-        
+        Blitz::BallLauncher Launcher;
+
         static constexpr double TRIGGER_ACTIVATION_THRESHOLD = .5;
 
         static constexpr double LEFT_FRONT_FGAIN = 0;
@@ -43,12 +45,12 @@ class Robot : public frc::TimedRobot
         static constexpr double RIGHT_FRONT_PGAIN = 0;
         static constexpr double RIGHT_FRONT_IGAIN = 0;
         static constexpr double RIGHT_FRONT_DGAIN = 0;
-        static constexpr double RIGHT_FRONT_DIR = 1;
+        static constexpr double RIGHT_FRONT_DIR = -1;
 
         static constexpr double RIGHT_BACK_FGAIN = 0;
         static constexpr double RIGHT_BACK_PGAIN = 0;
         static constexpr double RIGHT_BACK_IGAIN = 0;
         static constexpr double RIGHT_BACK_DGAIN = 0;
-        static constexpr double RIGHT_BACK_DIR = 1;
+        static constexpr double RIGHT_BACK_DIR = -1;
   
 };

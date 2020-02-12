@@ -5,13 +5,15 @@ Robot::Robot() :
   ManipulatorXbox(1),
   DriveTrain(),
   BallStorage()
+  Launcher()
 {
 
 }
 
 void Robot::RobotInit() 
 {
-  //Setup Joysticks (setting toggles/deadbabands/ramprates)
+  //Setup Joysticks
+  ManipulatorXbox.EnableAButtonToggle(true);
 
   //Setup Drivetrain
   DriveTrain.Initialize();
@@ -64,7 +66,10 @@ void Robot::TeleopPeriodic()
   ManipulatorXbox.update();
 
   //Manipulator Controls
+  bool PrimeShooter = ManipulatorXbox.GetLeftTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
   bool ShootBalls = ManipulatorXbox.GetRightTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
+  bool AutoAimTurret = ManipulatorXbox.GetAButton();
+  double ManualAimLauncher = ManipulatorXbox.GetLeftX();
   bool IntakeBalls = ManipulatorXbox.GetBButton();
   bool PukeBalls = ManipulatorXbox.GetXButton();
 
@@ -72,6 +77,17 @@ void Robot::TeleopPeriodic()
   double XValue = DriverXbox.GetLeftX();
   double YValue = DriverXbox.GetLeftY();
   double ZValue = DriverXbox.GetRightX();
+
+  //Run Ball Launcher
+  bool ReadyToShoot = false;
+  if(PrimeShooter)
+  {
+    ReadyToShoot = Launcher.PrimeLauncher(2500);
+  }
+  else
+  {
+    ReadyToShoot = Launcher.PrimeLauncher(0);
+  }
 
   //Run Feeder
   if(PukeBalls)
@@ -90,6 +106,8 @@ void Robot::TeleopPeriodic()
 
   //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
+
+  //Joystick outputs
 
   //Output Motor Speeds
   SmartDashboard::PutNumber("DriveMotor 1 Speed", DriveTrain.GetMotorOutput(0));
