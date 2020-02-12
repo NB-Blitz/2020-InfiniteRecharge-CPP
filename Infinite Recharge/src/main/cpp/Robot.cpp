@@ -56,7 +56,7 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit() 
 {
-  
+  SmartDashboard::PutNumber("Shooter RPM", 0);
 }
 
 void Robot::TeleopPeriodic()
@@ -79,11 +79,14 @@ void Robot::TeleopPeriodic()
   double YValue = DriverXbox.GetLeftY();
   double ZValue = DriverXbox.GetRightX();
 
+  //Get SmartDashboard Data
+  int LauncherRPM = SmartDashboard::GetNumber("Shooter RPM", 0);
+
   //Run Ball Launcher
   bool ReadyToShoot = false;
   if(PrimeShooter)
   {
-    ReadyToShoot = Launcher.PrimeLauncher(2500);
+    ReadyToShoot = Launcher.PrimeLauncher(LauncherRPM);
   }
   else
   {
