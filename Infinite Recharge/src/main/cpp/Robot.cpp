@@ -89,6 +89,7 @@ void Robot::TeleopPeriodic()
 
   if (ManipulatorXbox.GetLeftTrigger()){
     TriggerPressed = "Muy Bien";
+    DriveTrain.Drive(0, -0.2, 0);
   }
   else {
     TriggerPressed = "No Bueno";
@@ -96,10 +97,12 @@ void Robot::TeleopPeriodic()
 
   if (ManipulatorXbox.GetLeftBumper()){
     BumperPressed = "Muy Bien";
+    DriveTrain.Drive(0, 0.2, 0);
   }
   else {
     BumperPressed = "No Bueno";
   }
+
 
   frc::SmartDashboard::PutString("Left Trigger", TriggerPressed);
   frc::SmartDashboard::PutString("Left Bumper", BumperPressed);

@@ -26,13 +26,13 @@ class Robot : public frc::TimedRobot
         static constexpr double LEFT_FRONT_PGAIN = 0;
         static constexpr double LEFT_FRONT_IGAIN = 0;
         static constexpr double LEFT_FRONT_DGAIN = 0;
-        static constexpr double LEFT_FRONT_DIR = 1;
+        static constexpr double LEFT_FRONT_DIR = -1;
 
         static constexpr double LEFT_BACK_FGAIN = 0;
         static constexpr double LEFT_BACK_PGAIN = 0;
         static constexpr double LEFT_BACK_IGAIN = 0;
         static constexpr double LEFT_BACK_DGAIN = 0;
-        static constexpr double LEFT_BACK_DIR = 1;
+        static constexpr double LEFT_BACK_DIR = -1;
 
         static constexpr double RIGHT_FRONT_FGAIN = 0;
         static constexpr double RIGHT_FRONT_PGAIN = 0;
