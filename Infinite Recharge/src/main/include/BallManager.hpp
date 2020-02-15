@@ -3,6 +3,7 @@
 #include <frc/DigitalInput.h>
 #include <rev/CANSparkMax.h>
 #include <ctre/Phoenix.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 namespace Blitz
 {
@@ -28,7 +29,7 @@ namespace Blitz
             frc::DigitalInput StorageFullSwitch;
 
             rev::CANSparkMax IntakeMotor{INTAKE_MOTOR_ID, rev::CANSparkMax::MotorType::kBrushless};
-            rev::CANSparkMax MainFeederMotor{MAIN_FEED_MOTOR_ID, rev::CANSparkMax::MotorType::kBrushless};
+            rev::CANSparkMax MainFeederMotor{MAIN_FEED_MOTOR_ID, rev::CANSparkMax::MotorType::kBrushed};
 
             TalonSRX LauncherFeedMotor;
 

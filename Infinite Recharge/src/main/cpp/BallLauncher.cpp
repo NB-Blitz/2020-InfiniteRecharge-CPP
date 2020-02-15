@@ -1,8 +1,7 @@
 #include "BallLauncher.hpp"
 
 Blitz::BallLauncher::BallLauncher() :
-    TurretHomeSwitch(1),
-    LauncherFeedMotor(LAUNCHER_FEEDER_MOTOR_CAN_ID)
+    TurretHomeSwitch(1)
 {
     // TurretMotorPID.SetP(TURRET_PGAIN);
     // TurretMotorPID.SetI(TURRET_IGAIN);
@@ -136,27 +135,6 @@ bool Blitz::BallLauncher::PrimeLauncher(int rpm)
         return SetLauncherSpeed(rpm, BACK_SPIN);
     }
     
-}
-
-void Blitz::BallLauncher::FeedBalls(bool prime)
-{
-    bool LauncherReady = PrimeLauncher(prime);
-    if(prime)
-    {
-        if(LauncherReady)
-        {
-            LauncherFeedMotor.Set(ControlMode::PercentOutput, 1);
-            StorageFeedMotor.Set(-1);
-        }
-    }
-    else
-    {
-        if(LauncherReady)
-        {
-            LauncherFeedMotor.Set(ControlMode::PercentOutput, 0);
-            StorageFeedMotor.Set(0);
-        }
-    }
 }
 
 double Blitz::BallLauncher::GetTopMotorRPM()

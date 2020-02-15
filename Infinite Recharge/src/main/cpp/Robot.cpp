@@ -137,6 +137,7 @@ void Robot::TeleopPeriodic()
   //Launcher outputs
   SmartDashboard::PutNumber("Top Motor RPM", Launcher.GetTopMotorRPM());
   SmartDashboard::PutNumber("Bottom Motor RPM", Launcher.GetBottomMotorRPM());
+  SmartDashboard::PutBoolean("Motors at Speed", ReadyToShoot);
 
   //Output Motor Speeds
   SmartDashboard::PutNumber("DriveMotor 1 Speed", DriveTrain.GetMotorOutput(0));

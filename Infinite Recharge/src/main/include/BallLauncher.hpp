@@ -2,7 +2,6 @@
 
 #include <frc/DigitalInput.h>
 #include <rev/CANSparkMax.h>
-#include <ctre/Phoenix.h>
 
 
 namespace Blitz
@@ -114,10 +113,5 @@ namespace Blitz
 
             rev::CANEncoder TopMotorEncoder = TopMotor.GetEncoder();
             rev::CANEncoder BottomMotorEncoder = BottomMotor.GetEncoder();
-
-            rev::CANSparkMax StorageFeedMotor{STORAGE_FEEDER_MOTOR_CAN_ID, rev::CANSparkMax::MotorType::kBrushed}; 
-
-            TalonSRX LauncherFeedMotor;
-
     };
 }

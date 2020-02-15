@@ -12,24 +12,27 @@ Blitz::BallManager::BallManager() :
 
 void Blitz::BallManager::IntakeBalls()
 {
-    if(!IsFull())
-    {
-        IntakeMotor.Set(INTAKE_SPEED);
+    // if(!IsFull())
+    // {
+    //     IntakeMotor.Set(INTAKE_SPEED);
 
-        if(BallAtIntakeSwitch.Get())
-        {
-            MainFeederMotor.Set(STORAGE_INTAKE_SPEED);
-        }
-        else if(!BallAtIntakeSwitch.Get() && FirstStageSwitch.Get())
-        {
-            MainFeederMotor.Set(MOTOR_OFF);
-        }
-    }
-    else
-    {
-        IntakeMotor.Set(MOTOR_OFF);
-        MainFeederMotor.Set(MOTOR_OFF);
-    }
+    //     if(BallAtIntakeSwitch.Get())
+    //     {
+    //         MainFeederMotor.Set(STORAGE_INTAKE_SPEED);
+    //     }
+    //     else if(!BallAtIntakeSwitch.Get() && FirstStageSwitch.Get())
+    //     {
+    //         MainFeederMotor.Set(MOTOR_OFF);
+    //     }
+    // }
+    // else
+    // {
+    //     IntakeMotor.Set(MOTOR_OFF);
+    //     MainFeederMotor.Set(MOTOR_OFF);
+    // }
+
+    IntakeMotor.Set(INTAKE_SPEED);
+    MainFeederMotor.Set(STORAGE_INTAKE_SPEED);
 
     LauncherFeedMotor.Set(ControlMode::PercentOutput, MOTOR_OFF);
     
@@ -40,6 +43,7 @@ void Blitz::BallManager::FeedShooter()
     IntakeMotor.Set(INTAKE_SPEED);
     MainFeederMotor.Set(STORAGE_SHOOT_SPEED);
     LauncherFeedMotor.Set(ControlMode::PercentOutput, LAUNCHER_FEED_SPEED);
+    frc::SmartDashboard::PutString("Feeding Balls", "Feeding2");
 }
 
 void Blitz::BallManager::Puke()
