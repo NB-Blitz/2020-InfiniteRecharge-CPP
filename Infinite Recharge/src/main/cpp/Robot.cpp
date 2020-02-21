@@ -1,4 +1,7 @@
 #include "Robot.h"
+#include "ctre/Phoenix.h"
+
+TalonSRX srx = {0};
 
 Robot::Robot() :
   DriverXbox(0),
@@ -10,8 +13,7 @@ Robot::Robot() :
 
 void Robot::RobotInit() 
 {
-  //Setup Joysticks (setting toggles/deadbabands/ramprates)
-
+ 
   //Setup Drivetrain
   DriveTrain.Initialize();
 
@@ -89,7 +91,7 @@ void Robot::TeleopPeriodic()
 
   if (ManipulatorXbox.GetLeftTrigger()){
     TriggerPressed = "Muy Bien";
-    DriveTrain.Drive(0, -0.2, 0);
+    srx.Set(ControlMode::PercentOutput, 0.2);
   }
   else {
     TriggerPressed = "No Bueno";
@@ -97,7 +99,7 @@ void Robot::TeleopPeriodic()
 
   if (ManipulatorXbox.GetLeftBumper()){
     BumperPressed = "Muy Bien";
-    DriveTrain.Drive(0, 0.2, 0);
+    srx.Set(ControlMode::PercentOutput, -0.2);
   }
   else {
     BumperPressed = "No Bueno";
