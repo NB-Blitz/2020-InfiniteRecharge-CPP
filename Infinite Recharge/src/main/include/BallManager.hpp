@@ -24,12 +24,20 @@ namespace Blitz
 
         private:
 
+            bool SecondBallMoved = false;
+            int UnblockedCount = 0;
+            int BlockedCount = 0;
+            int IntakeStuckCounter = 0;
+
+
             frc::DigitalInput BallAtIntakeSwitch;
             frc::DigitalInput FirstStageSwitch;
             frc::DigitalInput StorageFullSwitch;
 
-            rev::CANSparkMax IntakeMotor{INTAKE_MOTOR_ID, rev::CANSparkMax::MotorType::kBrushless};
-            rev::CANSparkMax MainFeederMotor{MAIN_FEED_MOTOR_ID, rev::CANSparkMax::MotorType::kBrushed};
+            rev::CANSparkMax IntakeMotor{10, rev::CANSparkMax::MotorType::kBrushless};
+            rev::CANSparkMax MainFeederMotor{9, rev::CANSparkMax::MotorType::kBrushed};
+            
+            rev::CANEncoder IntakeMotorEncoder = IntakeMotor.GetEncoder();
 
             TalonSRX LauncherFeedMotor;
 
@@ -42,9 +50,9 @@ namespace Blitz
             const int LAUNCHER_FEED_MOTOR_ID = 8;
 
             const double MOTOR_OFF = 0;
-            const double INTAKE_SPEED = 1;
-            const double STORAGE_INTAKE_SPEED = .5;
-            const double STORAGE_SHOOT_SPEED = 1;
+            const double INTAKE_SPEED = .25;
+            const double STORAGE_INTAKE_SPEED = .25;
+            const double STORAGE_SHOOT_SPEED = .25;
             const double LAUNCHER_FEED_SPEED = 1;
     };
 }

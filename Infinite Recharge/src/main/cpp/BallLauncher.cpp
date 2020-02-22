@@ -1,7 +1,7 @@
 #include "BallLauncher.hpp"
 
 Blitz::BallLauncher::BallLauncher() :
-    TurretHomeSwitch(1)
+    UltraSonic(0)
 {
     // TurretMotorPID.SetP(TURRET_PGAIN);
     // TurretMotorPID.SetI(TURRET_IGAIN);
@@ -28,53 +28,9 @@ Blitz::BallLauncher::BallLauncher() :
     BottomMotor.SetClosedLoopRampRate(RAMP_RATE);
 }
 
-bool Blitz::BallLauncher::HomeLauncher()
+void Blitz::BallLauncher::HomeLauncher()
 {
-    if(!FastHome)
-    {
-        if(!TurretHomeSwitch.Get())
-        {
-            TurretMotor.Set(FastHomeSpeed);
-        }  
-        else
-        {
-            TurretMotor.Set(0); 
-            FastHome = true;
-            FastHomeReleased = false;
-        }
-    }
-    else if(!FastHomeReleased)
-    {
-        if(TurretHomeSwitch.Get())
-        {
-            TurretMotor.Set(-FastHomeSpeed);
-        }
-        else
-        {
-            TurretMotor.Set(0);
-            FastHomeReleased = true;
-        }
-    }
-    else if(!Homed)
-    {
-        if(!TurretHomeSwitch.Get())
-        {
-            TurretMotor.Set(SlowHomeSpeed);
-        }
-        else
-        {
-            //TurretMotorEncoder.SetPosition(0);
-            TurretMotor.Set(0);
-            Homed = true;
-        }
-    }
-
-    return Homed;
-}
-
-void Blitz::BallLauncher::SetTargetDistance(double dist)
-{
-    TargetDistance = dist;
+    //TurretMotorEncoder.SetPosition(0);
 }
 
 bool Blitz::BallLauncher::SetLauncherRotationRelative(double angle)
@@ -112,7 +68,7 @@ bool Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
 
 bool Blitz::BallLauncher::PrimeLauncher(bool prime)
 {
-    int rpm = CalculateLaunchVelocity(TargetDistance, TARGET_HEIGHT);
+    int rpm = CalculateLaunchVelocity(getUltrasonicDistance());
     
     if(prime)
     {
@@ -147,18 +103,42 @@ double Blitz::BallLauncher::GetBottomMotorRPM()
     return BottomMotorEncoder.GetVelocity();
 }
 
+double Blitz::BallLauncher::GetTurretAngle()
+{
+    return 0;//TurretMotorEncoder.GetPosition();
+}
+
+void Blitz::BallLauncher::TuneTopPID(double f, double p, double i, double d)
+{
+    TopMotorPID.SetP(p);
+    TopMotorPID.SetI(i);
+    TopMotorPID.SetD(d);
+    TopMotorPID.SetFF(f);
+}
+
+void Blitz::BallLauncher::TuneBottomPID(double f, double p, double i, double d)
+{
+    BottomMotorPID.SetP(p);
+    BottomMotorPID.SetI(i);
+    BottomMotorPID.SetD(d);
+    BottomMotorPID.SetFF(f);
+}
+
+double Blitz::BallLauncher::getUltrasonicDistance()
+{
+    return ((UltraSonic.GetVoltage()*1024*5)/(5*304.8)); //converts ultrasonic voltage to feet 
+}
+
+
+
+//Private Methods
 bool Blitz::BallLauncher::SetTurretPostion(double angle)
 {
     //TurretMotorPID.SetReference(angle, rev::ControlType::kPosition);
 
-    double CurrentAngle = 0; //TurretMotorEncoder.GetPosition();
+    double CurrentAngle = 0;//TurretMotorEncoder.GetPosition();
 
     return (CurrentAngle <= (angle + TURRET_ANGLE_THRESHOLD)) && (CurrentAngle >= (angle - TURRET_ANGLE_THRESHOLD));
-}
-
-double Blitz::BallLauncher::GetTurretAngle()
-{
-    return 0;//TurretMotorEncoder.GetPosition();
 }
 
 void Blitz::BallLauncher::SetTopMotorRPM(int rpm)
@@ -171,13 +151,14 @@ void Blitz::BallLauncher::SetBottomMotorRPM(int rpm)
     BottomMotorPID.SetReference(rpm, rev::ControlType::kVelocity);
 }
 
-double Blitz::BallLauncher::CalculateLaunchVelocity(double dist, double height)
+double Blitz::BallLauncher::CalculateLaunchVelocity(double dist)
 {
     //add launch velocity calculation
-    double velocity = 0;
-
-    //add velocity to motor rpm calculation
-    double rpm = velocity;
+    double rpm = 0;
+    if(dist <= 18 && dist >= 10)
+    {
+        rpm = (-95*dist) + 4540;
+    }
 
     return rpm;
 }

@@ -14,6 +14,24 @@ void Robot::RobotInit()
 {
   //Setup Joysticks
   ManipulatorXbox.EnableAButtonToggle(true);
+  ManipulatorXbox.EnableBButtonToggle(true);
+
+  DriverXbox.SetLeftXDeadband(.1);
+  DriverXbox.SetLeftYDeadband(.1);
+  DriverXbox.SetRightXDeadband(.1);
+
+  ManipulatorXbox.SetUniversalDeadband(.1);
+
+  //SmartDashboard inits
+  frc::SmartDashboard::PutNumber("TOP PGain", TOP_PGAIN);
+  frc::SmartDashboard::PutNumber("TOP IGain", TOP_IGAIN);
+  frc::SmartDashboard::PutNumber("TOP DGain", TOP_DGAIN);
+  frc::SmartDashboard::PutNumber("TOP Feed Forward", TOP_FEED_FORWARD);
+
+  frc::SmartDashboard::PutNumber("BOTTOM PGain", BOTTOM_PGAIN);
+  frc::SmartDashboard::PutNumber("BOTTOM IGain", BOTTOM_IGAIN);
+  frc::SmartDashboard::PutNumber("BOTTOM DGain", BOTTOM_DGAIN);
+  frc::SmartDashboard::PutNumber("BOTTOM Feed Forward", BOTTOM_FEED_FORWARD);
 
   //Setup Drivetrain
   DriveTrain.Initialize();
@@ -42,16 +60,27 @@ void Robot::RobotInit()
   DriveTrain.TuneP(3, RIGHT_BACK_PGAIN);
   DriveTrain.TuneI(3, RIGHT_BACK_IGAIN);
   DriveTrain.TuneD(3, RIGHT_BACK_DGAIN);
+
+
 }
 
 void Robot::AutonomousInit() 
 {
-
+  timer.Reset();
+  timer.Start();
 }
 
 void Robot::AutonomousPeriodic()
 {
-
+  if (timer.Get() < 1)
+  {
+    DriveTrain.Drive(0, -.5, 0);
+  }
+  else
+  {
+    DriveTrain.Drive(0, 0, 0);
+  }
+  
 }
 
 void Robot::TeleopInit() 
@@ -77,17 +106,38 @@ void Robot::TeleopPeriodic()
 
   //Drive Controls
   double XValue = DriverXbox.GetLeftX();
-  double YValue = DriverXbox.GetLeftY();
+  double YValue = -DriverXbox.GetLeftY();
   double ZValue = DriverXbox.GetRightX();
 
+  //Tune Launcher PID
+  double topPGain = frc::SmartDashboard::GetNumber("TOP PGain", TOP_PGAIN);
+  double topIGain = frc::SmartDashboard::GetNumber("TOP IGain", TOP_IGAIN);
+  double topDGain = frc::SmartDashboard::GetNumber("TOP DGain", TOP_DGAIN);
+  double topFeedForward = frc::SmartDashboard::GetNumber("TOP Feed Forward", TOP_FEED_FORWARD);
+
+  double bottomPGain = frc::SmartDashboard::GetNumber("BOTTOM PGain", BOTTOM_PGAIN);
+  double bottomIGain = frc::SmartDashboard::GetNumber("BOTTOM IGain", BOTTOM_IGAIN);
+  double bottomDGain = frc::SmartDashboard::GetNumber("BOTTOM DGain", BOTTOM_DGAIN);
+  double bottomFeedForward = frc::SmartDashboard::GetNumber("BOTTOM Feed Forward", BOTTOM_FEED_FORWARD);
+
   //Get SmartDashboard Data
-  int LauncherRPM = SmartDashboard::GetNumber("Shooter RPM", 0);
+  int SmartDashboardRPM = SmartDashboard::GetNumber("Shooter RPM", 0);
+
+  //Tune Shooter PID
+  Launcher.TuneTopPID(topFeedForward, topPGain, topIGain, topDGain);
+  Launcher.TuneBottomPID(bottomFeedForward, bottomPGain, bottomIGain, bottomDGain);
+  
+  int LauncherRPM = 5500;
+  if(SmartDashboardRPM != 0)
+  {
+    LauncherRPM = SmartDashboardRPM;
+  }
 
   //Run Ball Launcher
   bool ReadyToShoot = false;
   if(PrimeShooter)
   {
-    ReadyToShoot = Launcher.PrimeLauncher(LauncherRPM);
+    ReadyToShoot = Launcher.PrimeLauncher(true);//LauncherRPM);
   }
   else
   {
@@ -95,11 +145,12 @@ void Robot::TeleopPeriodic()
   }
 
   //Run Feeder
+  SmartDashboard::PutBoolean("Storage Full", BallStorage.IsFull());
   if(PukeBalls)
   {
     BallStorage.Puke();
   }
-  else if(ShootBalls && ReadyToShoot)
+  else if(ShootBalls)// && ReadyToShoot)
   {
     BallStorage.FeedShooter();
   }
@@ -107,11 +158,15 @@ void Robot::TeleopPeriodic()
   {
     BallStorage.IntakeBalls();
   }
+  else 
+  {
+    BallStorage.StopIntake();
+  }
 
   //Rotate Turret
   if(!AutoAimTurret)
   {
-    Launcher.RotateLauncherSpeed(ManualAimLauncher);
+    //Launcher.RotateLauncherSpeed(ManualAimLauncher);
   }
   else
   {
@@ -137,6 +192,8 @@ void Robot::TeleopPeriodic()
   //Launcher outputs
   SmartDashboard::PutNumber("Top Motor RPM", Launcher.GetTopMotorRPM());
   SmartDashboard::PutNumber("Bottom Motor RPM", Launcher.GetBottomMotorRPM());
+  SmartDashboard::PutNumber("Turret Angle", Launcher.GetTurretAngle());
+  SmartDashboard::PutNumber("Lidar Distance", Launcher.getUltrasonicDistance());
   SmartDashboard::PutBoolean("Motors at Speed", ReadyToShoot);
 
   //Output Motor Speeds

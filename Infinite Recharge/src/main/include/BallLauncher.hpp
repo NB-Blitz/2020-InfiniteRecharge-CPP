@@ -2,6 +2,8 @@
 
 #include <frc/DigitalInput.h>
 #include <rev/CANSparkMax.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/AnalogInput.h>
 
 
 namespace Blitz
@@ -11,9 +13,8 @@ namespace Blitz
         public:
             BallLauncher();
 
-            bool HomeLauncher();        //Moves turret to home and resets the encoder
+            void HomeLauncher();
 
-            void SetTargetDistance(double dist);
             bool SetLauncherRotationRelative(double angle);
             bool SetLauncherRotationAbsolute(double angle);
             void RotateLauncherSpeed(double speed);
@@ -22,34 +23,29 @@ namespace Blitz
 
             bool PrimeLauncher(bool prime);       //Ramp Up launch Motors
             bool PrimeLauncher(int rpm);       //Ramp Up launch Motors to rpm
-            void FeedBalls(bool prime);           //Feed Balls into Launcher
 
             double GetTopMotorRPM();
             double GetBottomMotorRPM();
+            
+            double GetTurretAngle();
+
+            void TuneTopPID(double f, double p, double i, double d);
+            void TuneBottomPID(double f, double p, double i, double d);
+
+            double getUltrasonicDistance();
 
 
         private:
             bool SetTurretPostion(double angle);
-            double GetTurretAngle();
 
             void SetTopMotorRPM(int rpm);
             void SetBottomMotorRPM(int rpm);
 
-            double CalculateLaunchVelocity(double dist, double height);
+            double CalculateLaunchVelocity(double dist);
 
-            double TargetDistance = 0;
             double TurretRotationSetPoint = 0;
 
-            bool FastHome = false;
-            bool FastHomeReleased = false;
-            double FastHomeSpeed = .5;
-
-            bool Homed = false;
-            double SlowHomeSpeed = .1;
-
             const double BACK_SPIN = 2000; //difference in RPM of wheels
-
-            const double TARGET_HEIGHT = 8; //target height in feet
 
             //Turret Constants
             const double COUNTS_PER_MOTOR_REVOLUTION = 44.4;
@@ -94,8 +90,6 @@ namespace Blitz
 
             //max motor RPM difference from setpoint to start feeding
             const int RPM_BUFFER = 100;
-            
-            frc::DigitalInput TurretHomeSwitch;
 
             //Turret Motor
             rev::CANSparkMax TurretMotor{TURRET_MOTOR_CAN_ID, rev::CANSparkMax::MotorType::kBrushed};
@@ -113,5 +107,7 @@ namespace Blitz
 
             rev::CANEncoder TopMotorEncoder = TopMotor.GetEncoder();
             rev::CANEncoder BottomMotorEncoder = BottomMotor.GetEncoder();
+
+            frc::AnalogInput UltraSonic;
     };
 }
