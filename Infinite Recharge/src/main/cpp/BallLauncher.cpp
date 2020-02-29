@@ -1,8 +1,13 @@
 #include "BallLauncher.hpp"
 
 Blitz::BallLauncher::BallLauncher() :
-    UltraSonic(0)
+    Lidar(3),
+    LidarCounter(&Lidar)
 {
+    LidarCounter.SetMaxPeriod(1.0);
+    LidarCounter.SetSemiPeriodMode(true);
+    LidarCounter.Reset();
+
     // TurretMotorPID.SetP(TURRET_PGAIN);
     // TurretMotorPID.SetI(TURRET_IGAIN);
     // TurretMotorPID.SetD(TURRET_DGAIN);
@@ -68,7 +73,7 @@ bool Blitz::BallLauncher::SetLauncherSpeed(int rpm, int backSpin)
 
 bool Blitz::BallLauncher::PrimeLauncher(bool prime)
 {
-    int rpm = CalculateLaunchVelocity(getUltrasonicDistance());
+    int rpm = CalculateLaunchVelocity(getLidarDistance());
     
     if(prime)
     {
@@ -124,9 +129,17 @@ void Blitz::BallLauncher::TuneBottomPID(double f, double p, double i, double d)
     BottomMotorPID.SetFF(f);
 }
 
-double Blitz::BallLauncher::getUltrasonicDistance()
+double Blitz::BallLauncher::getLidarDistance()
 {
-    return ((UltraSonic.GetVoltage()*1024*5)/(5*304.8)); //converts ultrasonic voltage to feet 
+    double distCM = 0;
+    if(LidarCounter.Get() < 1)
+    {
+        return 0;
+    }
+
+    distCM = (LidarCounter.GetPeriod() * 1000000.0 / 10.0);
+
+    return distCM;
 }
 
 

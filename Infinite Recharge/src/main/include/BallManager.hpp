@@ -34,8 +34,9 @@ namespace Blitz
             frc::DigitalInput FirstStageSwitch;
             frc::DigitalInput StorageFullSwitch;
 
-            rev::CANSparkMax IntakeMotor{10, rev::CANSparkMax::MotorType::kBrushless};
-            rev::CANSparkMax MainFeederMotor{9, rev::CANSparkMax::MotorType::kBrushed};
+            rev::CANSparkMax IntakeMotor{11, rev::CANSparkMax::MotorType::kBrushless};
+            rev::CANSparkMax FeederMotor1{9, rev::CANSparkMax::MotorType::kBrushless};
+            rev::CANSparkMax FeederMotor2{10, rev::CANSparkMax::MotorType::kBrushless};
             
             rev::CANEncoder IntakeMotorEncoder = IntakeMotor.GetEncoder();
 
@@ -52,7 +53,7 @@ namespace Blitz
             const double MOTOR_OFF = 0;
             const double INTAKE_SPEED = .25;
             const double STORAGE_INTAKE_SPEED = .25;
-            const double STORAGE_SHOOT_SPEED = .25;
-            const double LAUNCHER_FEED_SPEED = 1;
+            const double STORAGE_SHOOT_SPEED = 1;
+            const double LAUNCHER_FEED_SPEED = -1;
     };
 }

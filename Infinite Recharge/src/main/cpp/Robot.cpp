@@ -5,7 +5,8 @@ Robot::Robot() :
   ManipulatorXbox(1),
   DriveTrain(),
   BallStorage(),
-  Launcher()
+  Launcher(),
+  Climber()
 {
 
 }
@@ -16,11 +17,9 @@ void Robot::RobotInit()
   ManipulatorXbox.EnableAButtonToggle(true);
   ManipulatorXbox.EnableBButtonToggle(true);
 
-  DriverXbox.SetLeftXDeadband(.1);
-  DriverXbox.SetLeftYDeadband(.1);
-  DriverXbox.SetRightXDeadband(.1);
+  DriverXbox.SetUniversalDeadband(.15);
 
-  ManipulatorXbox.SetUniversalDeadband(.1);
+  ManipulatorXbox.SetUniversalDeadband(.15);
 
   //SmartDashboard inits
   frc::SmartDashboard::PutNumber("TOP PGain", TOP_PGAIN);
@@ -103,6 +102,8 @@ void Robot::TeleopPeriodic()
   double ManualAimLauncher = ManipulatorXbox.GetLeftX();
   bool IntakeBalls = ManipulatorXbox.GetBButton();
   bool PukeBalls = ManipulatorXbox.GetXButton();
+  double MoveLiftSpeed = -ManipulatorXbox.GetLeftY();
+  double MoveWinchSpeed = ManipulatorXbox.GetRightY();
 
   //Drive Controls
   double XValue = DriverXbox.GetLeftX();
@@ -127,7 +128,7 @@ void Robot::TeleopPeriodic()
   Launcher.TuneTopPID(topFeedForward, topPGain, topIGain, topDGain);
   Launcher.TuneBottomPID(bottomFeedForward, bottomPGain, bottomIGain, bottomDGain);
   
-  int LauncherRPM = 5500;
+  int LauncherRPM = 3000;
   if(SmartDashboardRPM != 0)
   {
     LauncherRPM = SmartDashboardRPM;
@@ -137,7 +138,7 @@ void Robot::TeleopPeriodic()
   bool ReadyToShoot = false;
   if(PrimeShooter)
   {
-    ReadyToShoot = Launcher.PrimeLauncher(true);//LauncherRPM);
+    ReadyToShoot = Launcher.PrimeLauncher(LauncherRPM);//LauncherRPM);
   }
   else
   {
@@ -166,12 +167,18 @@ void Robot::TeleopPeriodic()
   //Rotate Turret
   if(!AutoAimTurret)
   {
-    //Launcher.RotateLauncherSpeed(ManualAimLauncher);
+    Launcher.RotateLauncherSpeed(ManualAimLauncher);
   }
   else
   {
     //Automatically Aim the turret
   }
+
+  //Run Lift
+  Climber.MoveLiftSpeed(MoveLiftSpeed);
+
+  //Run Winch
+  Climber.RunWinch(MoveWinchSpeed);
 
   //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
@@ -193,7 +200,7 @@ void Robot::TeleopPeriodic()
   SmartDashboard::PutNumber("Top Motor RPM", Launcher.GetTopMotorRPM());
   SmartDashboard::PutNumber("Bottom Motor RPM", Launcher.GetBottomMotorRPM());
   SmartDashboard::PutNumber("Turret Angle", Launcher.GetTurretAngle());
-  SmartDashboard::PutNumber("Lidar Distance", Launcher.getUltrasonicDistance());
+  SmartDashboard::PutNumber("Lidar Distance", Launcher.getLidarDistance());
   SmartDashboard::PutBoolean("Motors at Speed", ReadyToShoot);
 
   //Output Motor Speeds

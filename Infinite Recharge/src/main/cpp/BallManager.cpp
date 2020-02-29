@@ -21,7 +21,8 @@ void Blitz::BallManager::IntakeBalls()
 
         if(!BallAtIntakeSwitch.Get())
         {
-            MainFeederMotor.Set(STORAGE_INTAKE_SPEED);
+            FeederMotor1.Set(-STORAGE_INTAKE_SPEED);
+            FeederMotor2.Set(STORAGE_INTAKE_SPEED);
             SecondBallMoved = false;
             UnblockedCount = 0;
         }
@@ -33,7 +34,8 @@ void Blitz::BallManager::IntakeBalls()
             }
             else
             {
-                MainFeederMotor.Set(MOTOR_OFF);
+                FeederMotor1.Set(MOTOR_OFF);
+                FeederMotor2.Set(MOTOR_OFF);
                 BlockedCount = 0;
             }
             
@@ -52,7 +54,8 @@ void Blitz::BallManager::IntakeBalls()
     else
     {
         IntakeMotor.Set(MOTOR_OFF);
-        MainFeederMotor.Set(MOTOR_OFF);
+        FeederMotor1.Set(MOTOR_OFF);
+        FeederMotor2.Set(MOTOR_OFF);
     }
 
     LauncherFeedMotor.Set(ControlMode::PercentOutput, MOTOR_OFF);
@@ -62,22 +65,24 @@ void Blitz::BallManager::IntakeBalls()
 void Blitz::BallManager::FeedShooter()
 {
     IntakeMotor.Set(INTAKE_SPEED);
-    MainFeederMotor.Set(STORAGE_SHOOT_SPEED);
+    FeederMotor1.Set(-STORAGE_SHOOT_SPEED);
+    FeederMotor2.Set(STORAGE_SHOOT_SPEED);
     LauncherFeedMotor.Set(ControlMode::PercentOutput, LAUNCHER_FEED_SPEED);
-    frc::SmartDashboard::PutString("Feeding Balls", "Feeding2");
 }
 
 void Blitz::BallManager::Puke()
 {
     IntakeMotor.Set(-INTAKE_SPEED);
-    //MainFeederMotor.Set(-STORAGE_SHOOT_SPEED);
-    //LauncherFeedMotor.Set(ControlMode::PercentOutput, -LAUNCHER_FEED_SPEED);
+    FeederMotor1.Set(STORAGE_SHOOT_SPEED);
+    FeederMotor2.Set(-STORAGE_SHOOT_SPEED);
+    LauncherFeedMotor.Set(ControlMode::PercentOutput, -LAUNCHER_FEED_SPEED);
 }
 
 void Blitz::BallManager::StopIntake()
 {
     IntakeMotor.Set(MOTOR_OFF);
-    MainFeederMotor.Set(MOTOR_OFF);
+    FeederMotor1.Set(MOTOR_OFF);
+    FeederMotor2.Set(MOTOR_OFF);
     LauncherFeedMotor.Set(ControlMode::PercentOutput, MOTOR_OFF);
 }
 

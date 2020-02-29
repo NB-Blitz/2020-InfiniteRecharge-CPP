@@ -1,9 +1,9 @@
 #pragma once
 
 #include <frc/DigitalInput.h>
+#include <frc/Counter.h>
 #include <rev/CANSparkMax.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-#include <frc/AnalogInput.h>
 
 
 namespace Blitz
@@ -32,7 +32,7 @@ namespace Blitz
             void TuneTopPID(double f, double p, double i, double d);
             void TuneBottomPID(double f, double p, double i, double d);
 
-            double getUltrasonicDistance();
+            double getLidarDistance();
 
 
         private:
@@ -61,8 +61,6 @@ namespace Blitz
             const int TOP_MOTOR_CAN_ID = 5;
             const int BOTTOM_MOTOR_CAN_ID = 6;
             const int TURRET_MOTOR_CAN_ID = 7;
-            const int STORAGE_FEEDER_MOTOR_CAN_ID = 9;
-            const int LAUNCHER_FEEDER_MOTOR_CAN_ID = 8;
 
             //Motor Constants
             const double TURRET_PGAIN = 0;
@@ -108,6 +106,7 @@ namespace Blitz
             rev::CANEncoder TopMotorEncoder = TopMotor.GetEncoder();
             rev::CANEncoder BottomMotorEncoder = BottomMotor.GetEncoder();
 
-            frc::AnalogInput UltraSonic;
+            frc::DigitalInput Lidar;
+            frc::Counter LidarCounter;
     };
 }

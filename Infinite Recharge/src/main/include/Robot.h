@@ -6,6 +6,7 @@
 #include <BlitzLib/BlitzLib.hpp>
 #include "BallManager.hpp"
 #include "BallLauncher.hpp"
+#include "CLimber.hpp"
 
 
 class Robot : public frc::TimedRobot
@@ -27,6 +28,7 @@ class Robot : public frc::TimedRobot
 
         Blitz::BallManager BallStorage;
         Blitz::BallLauncher Launcher;
+        Blitz::Climber Climber;
 
         frc::Timer timer;
 
