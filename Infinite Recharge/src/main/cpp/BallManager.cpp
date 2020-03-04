@@ -16,7 +16,7 @@ void Blitz::BallManager::IntakeBalls()
     frc::SmartDashboard::PutBoolean("First Stage Line Break", FirstStageSwitch.Get());
     frc::SmartDashboard::PutBoolean("Storage Full Line Break", StorageFullSwitch.Get());
     if(StorageFullSwitch.Get())
-    {    
+    {
         IntakeMotor.Set(INTAKE_SPEED);
 
         if(!BallAtIntakeSwitch.Get())
@@ -28,7 +28,7 @@ void Blitz::BallManager::IntakeBalls()
         }
         else if(SecondBallMoved && !FirstStageSwitch.Get())
         {
-            if(BlockedCount <= 40)
+            if(BlockedCount <= 30)
             {
                 BlockedCount++;
             }
@@ -40,10 +40,12 @@ void Blitz::BallManager::IntakeBalls()
             }
             
         }
+        
 
         if(BallAtIntakeSwitch.Get() && UnblockedCount == 10)
         {
             SecondBallMoved = true;
+
         }
         else if(BallAtIntakeSwitch.Get())
         {
@@ -59,7 +61,6 @@ void Blitz::BallManager::IntakeBalls()
     }
 
     LauncherFeedMotor.Set(ControlMode::PercentOutput, MOTOR_OFF);
-    
 }
 
 void Blitz::BallManager::FeedShooter()
