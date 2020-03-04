@@ -17,7 +17,11 @@ void Robot::RobotInit()
   ManipulatorXbox.EnableAButtonToggle(true);
   ManipulatorXbox.EnableBButtonToggle(true);
 
-  DriverXbox.SetUniversalDeadband(.15);
+  DriverXbox.SetUniversalDeadband(.1);
+  DriverXbox.ReCenterLeftX();
+  DriverXbox.ReCenterLeftY();
+  DriverXbox.ReCenterRightX();
+  DriverXbox.ReCenterRightY();
 
   ManipulatorXbox.SetUniversalDeadband(.15);
 
@@ -84,6 +88,10 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit() 
 {
+  DriverXbox.ReCenterLeftX();
+  DriverXbox.ReCenterLeftY();
+  DriverXbox.ReCenterRightX();
+  DriverXbox.ReCenterRightY();
   //Initialize SmartDashboard Values
   SmartDashboard::PutNumber("Shooter RPM", 0);
   
@@ -91,6 +99,7 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic()
 {
+
   //update controller values
   DriverXbox.update();
   ManipulatorXbox.update();
@@ -98,8 +107,8 @@ void Robot::TeleopPeriodic()
   //Manipulator Controls
   bool PrimeShooter = ManipulatorXbox.GetLeftTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
   bool ShootBalls = ManipulatorXbox.GetRightTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
-  bool AutoAimTurret = ManipulatorXbox.GetAButton();
-  double ManualAimLauncher = ManipulatorXbox.GetLeftX();
+  bool AutoAimTurret = false;//ManipulatorXbox.GetAButton();
+  double ManualAimLauncher = ManipulatorXbox.GetRightX();
   bool IntakeBalls = ManipulatorXbox.GetBButton();
   bool PukeBalls = ManipulatorXbox.GetXButton();
   double MoveLiftSpeed = -ManipulatorXbox.GetLeftY();
@@ -175,7 +184,7 @@ void Robot::TeleopPeriodic()
   }
 
   //Run Lift
-  Climber.MoveLiftSpeed(MoveLiftSpeed);
+  Climber.MoveLiftSpeed(MoveLiftSpeed * .3);
 
   //Run Winch
   Climber.RunWinch(MoveWinchSpeed);
