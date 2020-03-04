@@ -187,7 +187,7 @@ void Robot::TeleopPeriodic()
   Climber.MoveLiftSpeed(MoveLiftSpeed * .3);
 
   //Run Winch
-  Climber.RunWinch(MoveWinchSpeed);
+  //Climber.RunWinch(MoveWinchSpeed);
 
   //Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
