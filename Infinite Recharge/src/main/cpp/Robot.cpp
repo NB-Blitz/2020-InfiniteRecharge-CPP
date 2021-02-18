@@ -69,21 +69,21 @@ void Robot::RobotInit()
 
 void Robot::AutonomousInit() 
 {
-  timer.Reset();
-  timer.Start();
+  AutoManager.Initialize();
 }
 
 void Robot::AutonomousPeriodic()
 {
-  if (timer.Get() < 1)
-  {
-    DriveTrain.Drive(0, -.5, 0);
-  }
-  else
-  {
-    DriveTrain.Drive(0, 0, 0);
-  }
+  // Get Robot Position
+  Blitz::Point robot;
+  robot.x = frc::SmartDashboard::GetNumber("Robot X Position", 0);
+  robot.y = frc::SmartDashboard::GetNumber("Robot Y Position", 0);
   
+  // Calculate Vector
+  float deltaAngle = AutoManager.GetDriveVector(robot);
+
+  // D r i v e
+  DriveTrain.Drive(0, 0.1, deltaAngle);
 }
 
 void Robot::TeleopInit() 
@@ -115,9 +115,9 @@ void Robot::TeleopPeriodic()
   double MoveWinchSpeed = ManipulatorXbox.GetRightY();
 
   //Drive Controls
-  double XValue = DriverXbox.GetLeftX();
-  double YValue = -DriverXbox.GetLeftY();
-  double ZValue = DriverXbox.GetRightX();
+  double XValue = -DriverXbox.GetLeftX() * 0.3; // +
+  double YValue = DriverXbox.GetLeftY()  * 0.3; // -
+  double ZValue = DriverXbox.GetRightX() * 0.3; // +
 
   //Tune Launcher PID
   double topPGain = frc::SmartDashboard::GetNumber("TOP PGain", TOP_PGAIN);
