@@ -13,7 +13,7 @@ Robot::Robot() :
 
 void Robot::RobotInit() 
 {
-  //Setup Joysticks
+  // Controls
   ManipulatorXbox.EnableAButtonToggle(true);
   ManipulatorXbox.EnableBButtonToggle(true);
 
@@ -25,7 +25,7 @@ void Robot::RobotInit()
 
   ManipulatorXbox.SetUniversalDeadband(.15);
 
-  //SmartDashboard inits
+  // SmartDashboard
   frc::SmartDashboard::PutNumber("TOP PGain", TOP_PGAIN);
   frc::SmartDashboard::PutNumber("TOP IGain", TOP_IGAIN);
   frc::SmartDashboard::PutNumber("TOP DGain", TOP_DGAIN);
@@ -36,7 +36,7 @@ void Robot::RobotInit()
   frc::SmartDashboard::PutNumber("BOTTOM DGain", BOTTOM_DGAIN);
   frc::SmartDashboard::PutNumber("BOTTOM Feed Forward", BOTTOM_FEED_FORWARD);
 
-  //Setup Drivetrain
+  // DriveTrain
   DriveTrain.Initialize();
 
   DriveTrain.SetMotorDirection(0, LEFT_FRONT_DIR);
@@ -63,27 +63,21 @@ void Robot::RobotInit()
   DriveTrain.TuneP(3, RIGHT_BACK_PGAIN);
   DriveTrain.TuneI(3, RIGHT_BACK_IGAIN);
   DriveTrain.TuneD(3, RIGHT_BACK_DGAIN);
-
-
 }
 
 void Robot::AutonomousInit() 
 {
-  AutoManager.Initialize();
+  AutoManager.Initialize(&DriveTrain);
 }
 
 void Robot::AutonomousPeriodic()
 {
-  // Get Robot Position
-  Blitz::Point robot;
-  robot.x = frc::SmartDashboard::GetNumber("Robot X Position", 0);
-  robot.y = frc::SmartDashboard::GetNumber("Robot Y Position", 0);
-  
-  // Calculate Vector
-  float deltaAngle = AutoManager.GetDriveVector(robot);
-
-  // D r i v e
-  DriveTrain.Drive(0, 0.1, deltaAngle);
+  Blitz::Pose deltaPose = AutoManager.CalcVector();
+  DriveTrain.Drive(
+    deltaPose.x,
+    deltaPose.y,
+    deltaPose.r
+  );
 }
 
 void Robot::TeleopInit() 
@@ -92,19 +86,17 @@ void Robot::TeleopInit()
   DriverXbox.ReCenterLeftY();
   DriverXbox.ReCenterRightX();
   DriverXbox.ReCenterRightY();
-  //Initialize SmartDashboard Values
+
   SmartDashboard::PutNumber("Shooter RPM", 0);
-  
 }
 
 void Robot::TeleopPeriodic()
 {
-
-  //update controller values
+  // Controls
   DriverXbox.update();
   ManipulatorXbox.update();
 
-  //Manipulator Controls
+  // Manipulator Controls
   bool PrimeShooter = ManipulatorXbox.GetLeftTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
   bool ShootBalls = ManipulatorXbox.GetRightTrigger() > TRIGGER_ACTIVATION_THRESHOLD;
   bool AutoAimTurret = false;//ManipulatorXbox.GetAButton();
@@ -114,12 +106,12 @@ void Robot::TeleopPeriodic()
   double MoveLiftSpeed = -ManipulatorXbox.GetLeftY();
   double MoveWinchSpeed = ManipulatorXbox.GetRightY();
 
-  //Drive Controls
-  double XValue = -DriverXbox.GetLeftX() * 0.3; // +
-  double YValue = DriverXbox.GetLeftY()  * 0.3; // -
-  double ZValue = DriverXbox.GetRightX() * 0.3; // +
+  // Drive Controls
+  double XValue = -DriverXbox.GetLeftX() * .2; // +
+  double YValue = DriverXbox.GetLeftY()  * .2; // -
+  double ZValue = DriverXbox.GetRightX() * .2; // +
 
-  //Tune Launcher PID
+  // Tune Launcher PID
   double topPGain = frc::SmartDashboard::GetNumber("TOP PGain", TOP_PGAIN);
   double topIGain = frc::SmartDashboard::GetNumber("TOP IGain", TOP_IGAIN);
   double topDGain = frc::SmartDashboard::GetNumber("TOP DGain", TOP_DGAIN);
@@ -130,31 +122,31 @@ void Robot::TeleopPeriodic()
   double bottomDGain = frc::SmartDashboard::GetNumber("BOTTOM DGain", BOTTOM_DGAIN);
   double bottomFeedForward = frc::SmartDashboard::GetNumber("BOTTOM Feed Forward", BOTTOM_FEED_FORWARD);
 
-  //Get SmartDashboard Data
+  // SmartDashboard
   int SmartDashboardRPM = SmartDashboard::GetNumber("Shooter RPM", 0);
 
-  //Tune Shooter PID
+  // Shooter PID
   Launcher.TuneTopPID(topFeedForward, topPGain, topIGain, topDGain);
   Launcher.TuneBottomPID(bottomFeedForward, bottomPGain, bottomIGain, bottomDGain);
-  
+
   int LauncherRPM = 3000;
   if(SmartDashboardRPM != 0)
   {
     LauncherRPM = SmartDashboardRPM;
   }
 
-  //Run Ball Launcher
+  // Ball Launcher
   bool ReadyToShoot = false;
   if(PrimeShooter)
   {
-    ReadyToShoot = Launcher.PrimeLauncher(LauncherRPM);//LauncherRPM);
+    //ReadyToShoot = Launcher.PrimeLauncher(LauncherRPM); // <-- Removed for 2021 season
   }
   else
   {
-    ReadyToShoot = Launcher.PrimeLauncher(0);
+    //ReadyToShoot = Launcher.PrimeLauncher(0); // <-- Removed for 2021 season
   }
 
-  //Run Feeder
+  // Feeder
   SmartDashboard::PutBoolean("Storage Full", BallStorage.IsFull());
   if(PukeBalls)
   {
@@ -173,52 +165,48 @@ void Robot::TeleopPeriodic()
     BallStorage.StopIntake();
   }
 
-  //Rotate Turret
+  // Turret
   if(!AutoAimTurret)
   {
-    Launcher.RotateLauncherSpeed(ManualAimLauncher);
+    //Launcher.RotateLauncherSpeed(ManualAimLauncher); // <-- Removed for 2021 season
   }
   else
   {
-    //Automatically Aim the turret
+    // TODO: Automatically Aim the turret
   }
 
-  //Run Lift
-  Climber.MoveLiftSpeed(MoveLiftSpeed * .3);
+  // Lift
+  //Climber.MoveLiftSpeed(MoveLiftSpeed * .3); // <-- Removed for 2021 season
 
-  //Run Winch
-  //Climber.RunWinch(MoveWinchSpeed);
+  // Winch
+  //Climber.RunWinch(MoveWinchSpeed); // <-- Removed for 2021 season
 
-  //Drive Robot
+  // Drive Robot
   DriveTrain.Drive(XValue, YValue, ZValue);
 
-  //Manipulator Joystick outputs
+  // Controls
   SmartDashboard::PutBoolean("Manipulator: Prime Shooter", PrimeShooter);
   SmartDashboard::PutBoolean("Manipulator: Shoot Balls", ShootBalls);
   SmartDashboard::PutBoolean("Manipulator: Automatic Turret", AutoAimTurret);
   SmartDashboard::PutBoolean("Manipulator: Intake Balls", IntakeBalls);
   SmartDashboard::PutBoolean("Manipulator: Puke Balls", PukeBalls);
   SmartDashboard::PutNumber("Manipulator: Manual Turret Speed", ManualAimLauncher);
-  
-  //Driver Joystick outputs
   SmartDashboard::PutNumber("Driver: X-Value", XValue);
   SmartDashboard::PutNumber("Driver: Y-Value", YValue);
   SmartDashboard::PutNumber("Driver: Z-Value", ZValue);
 
-  //Launcher outputs
+  // Launcher
   SmartDashboard::PutNumber("Top Motor RPM", Launcher.GetTopMotorRPM());
   SmartDashboard::PutNumber("Bottom Motor RPM", Launcher.GetBottomMotorRPM());
   SmartDashboard::PutNumber("Turret Angle", Launcher.GetTurretAngle());
   SmartDashboard::PutNumber("Lidar Distance", Launcher.getLidarDistance());
   SmartDashboard::PutBoolean("Motors at Speed", ReadyToShoot);
 
-  //Output Motor Speeds
+  // Motors
   SmartDashboard::PutNumber("DriveMotor 1 Speed", DriveTrain.GetMotorOutput(0));
   SmartDashboard::PutNumber("DriveMotor 2 Speed", DriveTrain.GetMotorOutput(1));
   SmartDashboard::PutNumber("DriveMotor 3 Speed", DriveTrain.GetMotorOutput(2));
   SmartDashboard::PutNumber("DriveMotor 4 Speed", DriveTrain.GetMotorOutput(3));
-  
-  //Output Motor Setpoints
   SmartDashboard::PutNumber("DriveMotor 1 SetPoint", DriveTrain.GetMotorSetPoint(0));
   SmartDashboard::PutNumber("DriveMotor 2 SetPoint", DriveTrain.GetMotorSetPoint(1));
   SmartDashboard::PutNumber("DriveMotor 3 SetPoint", DriveTrain.GetMotorSetPoint(2));

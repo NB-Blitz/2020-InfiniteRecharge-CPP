@@ -32,6 +32,31 @@ double Blitz::DriveTrain::GetMotorOutput(int MotorID)
     return 0;
 }
 
+double Blitz::DriveTrain::GetMotorDistance(int MotorID)
+{
+    switch(MotorID)
+    {
+        case 0:
+            return LeftFrontEncoder.GetPosition();
+        case 1 :
+            return LeftBackEncoder.GetPosition();
+        case 2 :
+            return RightFrontEncoder.GetPosition();
+        case 3 :
+            return RightBackEncoder.GetPosition();
+    }
+
+    return 0;
+}
+
+void Blitz::DriveTrain::ResetMotorDistance()
+{
+    LeftFrontEncoder.SetPosition(0);
+    LeftBackEncoder.SetPosition(0);
+    RightFrontEncoder.SetPosition(0);
+    RightBackEncoder.SetPosition(0);
+}
+
 void Blitz::DriveTrain::EnablePID(bool Enabled)
 {
     usePID = Enabled;

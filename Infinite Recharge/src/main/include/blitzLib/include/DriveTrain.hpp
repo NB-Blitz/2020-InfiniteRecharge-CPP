@@ -14,6 +14,8 @@ namespace Blitz
             void SetMotorDirection(int Motor, int dir);
             double GetMotorSetPoint(int MotorID);
             double GetMotorOutput(int MotorID);
+            double GetMotorDistance(int MotorID);
+            void ResetMotorDistance();
 
             void EnablePID(bool enabled);
             void TuneF(int MotorID, double FGain);

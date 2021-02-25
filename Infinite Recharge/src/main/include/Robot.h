@@ -23,16 +23,18 @@ class Robot : public frc::TimedRobot
         void TeleopPeriodic() override;
 
     private:
+        // Controls
         Blitz::Joysticks::XboxController DriverXbox;
         Blitz::Joysticks::XboxController ManipulatorXbox;
 
+        // Managers
         Blitz::Mecanum DriveTrain;
-
         Blitz::AutoManager AutoManager;
         Blitz::BallManager BallStorage;
         Blitz::BallLauncher Launcher;
         Blitz::Climber Climber;
 
+        // Constants
         static constexpr double TRIGGER_ACTIVATION_THRESHOLD = .5;
 
         static constexpr double LEFT_FRONT_FGAIN = 0;
@@ -69,6 +71,5 @@ class Robot : public frc::TimedRobot
         const double BOTTOM_IGAIN = 0;
         const double BOTTOM_DGAIN = 0.01;
         const double BOTTOM_IZONE = 0;
-        const double BOTTOM_FEED_FORWARD = 0.000167;
-  
+        const double BOTTOM_FEED_FORWARD = 0.000167;  
 };
