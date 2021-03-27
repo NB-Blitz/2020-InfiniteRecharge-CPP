@@ -15,7 +15,8 @@ void Blitz::BallManager::IntakeBalls()
     frc::SmartDashboard::PutBoolean("Intake Line Break", BallAtIntakeSwitch.Get());
     frc::SmartDashboard::PutBoolean("First Stage Line Break", FirstStageSwitch.Get());
     frc::SmartDashboard::PutBoolean("Storage Full Line Break", StorageFullSwitch.Get());
-    if(StorageFullSwitch.Get())
+    //if(StorageFullSwitch.Get()) // <-- Removed for 2021 season
+    if (true)
     {
         IntakeMotor.Set(INTAKE_SPEED);
 
@@ -96,3 +97,7 @@ bool Blitz::BallManager::IsFull()
     return !StorageFullSwitch.Get();
 }
 
+bool Blitz::BallManager::GetFirstLineBreak()
+{
+    return BallAtIntakeSwitch.Get();
+}

@@ -27,6 +27,8 @@ class Robot : public frc::TimedRobot
         Blitz::Joysticks::XboxController DriverXbox;
         Blitz::Joysticks::XboxController ManipulatorXbox;
 
+        frc::Timer Timer;
+
         // Managers
         Blitz::Mecanum DriveTrain;
         Blitz::AutoManager AutoManager;

@@ -22,6 +22,8 @@ namespace Blitz
 
             bool IsFull();
 
+            bool GetFirstLineBreak();
+
         private:
 
             bool SecondBallMoved = false;
@@ -51,7 +53,7 @@ namespace Blitz
             const int LAUNCHER_FEED_MOTOR_ID = 8;
 
             const double MOTOR_OFF = 0;
-            const double INTAKE_SPEED = .25;
+            const double INTAKE_SPEED = .75; // .25 -> .75
             const double STORAGE_INTAKE_SPEED = 1;
             const double STORAGE_SHOOT_SPEED = 1;
             const double LAUNCHER_FEED_SPEED = -1;

@@ -6,8 +6,17 @@
 
 void Blitz::AutoManager::Initialize(Mecanum* Drivetrain)
 {
+    // Network Tables
+    SmartDashboard::PutNumber("Ball X", 0);
+    SmartDashboard::PutNumber("Ball Y", 0);
+    SmartDashboard::PutBoolean("See Ball", false);
+
+    // IMU
+    IMU.ZeroYaw();
+
     // Set Mode
     this->Drivetrain = Drivetrain;
+    Drivetrain->ResetMotorDistance();
     currentMode = (AutoMode)SmartDashboard::GetNumber("Autonomous Mode", AutoMode::PAUSED);
     if (currentMode == AutoMode::PAUSED)
         SmartDashboard::PutNumber("Autonomous Mode", AutoMode::PAUSED);
@@ -28,43 +37,64 @@ void Blitz::AutoManager::Initialize(Mecanum* Drivetrain)
             return;
     }
     pointCount = (sizeof(points) / sizeof(points[0])) - 3;
+    SmartDashboard::PutNumber("Auto Point Count", pointCount);
 }
 
 /*
         Vector Calculators
 */
 
-Blitz::Pose Blitz::AutoManager::CalcVector()
+Blitz::Pose Blitz::AutoManager::CalcVector(bool hasIntaked)
 {
     if (currentMode == Blitz::AutoMode::SEARCH)
-        return CalcBallVector();
+        return CalcBallVector(hasIntaked);
     else if (currentMode != Blitz::AutoMode::PAUSED)
         return CalcNavVector();
     else
         return Pose();
 }
-Blitz::Pose Blitz::AutoManager::CalcBallVector()
+Blitz::Pose Blitz::AutoManager::CalcBallVector(bool hasIntaked)
 {
     double ballX = SmartDashboard::GetNumber("Ball X", 0);
     double ballY = SmartDashboard::GetNumber("Ball Y", 0);
+    double ballArea = SmartDashboard::GetNumber("Last Area", 0);
+    double maxArea = SmartDashboard::GetNumber("Max Area", 7500);
     bool seeBall = SmartDashboard::GetBoolean("See Ball", false);
     double yaw = IMU.GetYaw();
     Pose deltaPose;
 
-    if (seeBall)
+    double flick = 0;
+
+    if (seeBall && ballArea < maxArea && !hasIntaked)
     {
         deltaPose = Pose(
             0,
-            0,
-            ballX * ballX * ballX
+            ROBOT_SPEED,
+            ballX * ballX * ballX * ROTATE_SPEED
         );
-    } else {
+        lastYaw = yaw;
+    }
+    else if (seeBall && !hasIntaked)
+    {
         deltaPose = Pose(
             0,
-            0,
-            yaw / 180.0
+            ROBOT_SPEED / 3,
+            0
         );
+        lastYaw = yaw;
     }
+    else if (hasIntaked)
+    {
+        double deltaYaw = lastYaw > 0 ? .15 : -.15;
+        deltaPose = Pose(
+            0,
+            ROBOT_SPEED / 2,
+            -deltaYaw * FLICK_SPEED
+        );
+        flick = -deltaYaw * FLICK_SPEED;
+    }
+
+    SmartDashboard::PutNumber("Flick", flick);
 
     return deltaPose;
 }
@@ -130,7 +160,7 @@ Blitz::Pose Blitz::AutoManager::CalcNavVector()
 
     Pose deltaPose(
         0,
-        0,
+        -.1,
         deltaAngle / 180.0
     );
     return deltaPose;
@@ -143,10 +173,10 @@ Blitz::Pose Blitz::AutoManager::CalcNavVector()
 void Blitz::AutoManager::CalcEncDisposition()
 {
     // Encoders
-    double motor1 = Drivetrain->GetMotorDistance(0);
-    double motor2 = Drivetrain->GetMotorDistance(1);
-    double motor3 = Drivetrain->GetMotorDistance(2);
-    double motor4 = Drivetrain->GetMotorDistance(3);
+    double motor1 = Drivetrain->GetMotorDistance(0) * -ENC_SCALE;
+    double motor2 = Drivetrain->GetMotorDistance(1) * -ENC_SCALE;
+    double motor3 = Drivetrain->GetMotorDistance(2) * ENC_SCALE;
+    double motor4 = Drivetrain->GetMotorDistance(3) * ENC_SCALE;
     Drivetrain->ResetMotorDistance();
 
     // Maths

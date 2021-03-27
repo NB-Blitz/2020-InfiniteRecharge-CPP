@@ -57,8 +57,8 @@ namespace Blitz
         public:
             void Initialize(Mecanum* Drivetrain);
 
-            Pose CalcVector();
-            Pose CalcBallVector();
+            Pose CalcVector(bool hasIntaked);
+            Pose CalcBallVector(bool hasIntaked);
             Pose CalcNavVector();
             void CalcEncDisposition();
 
@@ -72,6 +72,7 @@ namespace Blitz
             // Vars
             int currentPoint = 0;
             int pointCount = 0;
+            double lastYaw = 0;
             const Point *points;
             AutoMode currentMode;
             Pose robotPose;
@@ -79,12 +80,12 @@ namespace Blitz
             // Points
             const Point BARREL[7] = { 
                 Point(0, 0),
-                Point(1, 1),
-                Point(1, 4),
-                Point(2, 5),
-                Point(9, 9),
-                Point(9, 9),
-                Point(9, 9)
+                Point(1, 0),
+                Point(2, 0),
+                Point(3, 0),
+                Point(9, 0),
+                Point(9, 0),
+                Point(9, 0)
             };
             const Point SLALOM[7] = { 
                 Point(0, 0),
@@ -109,11 +110,14 @@ namespace Blitz
             const double DIST_TO_POINT = 1;
             const double T_DISTANCE = 0.2;
             const double COUNTER_STEER = 0; // .1
-            const double ROBOT_SPEED = 0.1;
+            const double ROBOT_SPEED = 0.4; // .1
+            const double FLICK_SPEED = 3.8;
+            const double ROTATE_SPEED = 0.5;
             
             // Encoders
             const double WHEEL_DIST = .7;
             const double WHEEL_CIRCUMFERENCE = .7;
             const double WHEEL_ANGLE = (720.0 * WHEEL_CIRCUMFERENCE) / (PI * WHEEL_DIST);
+            const double ENC_SCALE = 0.025;
     };
 }

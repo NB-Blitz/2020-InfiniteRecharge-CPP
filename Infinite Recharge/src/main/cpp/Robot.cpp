@@ -3,6 +3,7 @@
 Robot::Robot() :
   DriverXbox(0),
   ManipulatorXbox(1),
+  Timer(),
   DriveTrain(),
   BallStorage(),
   Launcher(),
@@ -68,16 +69,38 @@ void Robot::RobotInit()
 void Robot::AutonomousInit() 
 {
   AutoManager.Initialize(&DriveTrain);
+  Timer.Reset();
+  Timer.Start();
 }
 
 void Robot::AutonomousPeriodic()
 {
-  Blitz::Pose deltaPose = AutoManager.CalcVector();
-  DriveTrain.Drive(
-    deltaPose.x,
-    deltaPose.y,
-    deltaPose.r
-  );
+  if (Timer.Get() < 0.1)
+  {
+    DriveTrain.Drive(
+      0,
+      -0.5,
+      0
+    );
+  }
+  else if (Timer.Get() < 0.7)
+  {
+    DriveTrain.Drive(
+      0,
+      0,
+      0
+    );
+  }
+  else
+  {
+    Blitz::Pose deltaPose = AutoManager.CalcVector(!Robot::BallStorage.GetFirstLineBreak());
+    BallStorage.IntakeBalls();
+    DriveTrain.Drive(
+      deltaPose.x,
+      deltaPose.y,
+      deltaPose.r
+    );
+  }
 }
 
 void Robot::TeleopInit() 
@@ -86,6 +109,8 @@ void Robot::TeleopInit()
   DriverXbox.ReCenterLeftY();
   DriverXbox.ReCenterRightX();
   DriverXbox.ReCenterRightY();
+
+  DriveTrain.ResetMotorDistance();
 
   SmartDashboard::PutNumber("Shooter RPM", 0);
 }
@@ -107,9 +132,9 @@ void Robot::TeleopPeriodic()
   double MoveWinchSpeed = ManipulatorXbox.GetRightY();
 
   // Drive Controls
-  double XValue = -DriverXbox.GetLeftX() * .2; // +
-  double YValue = DriverXbox.GetLeftY()  * .2; // -
-  double ZValue = DriverXbox.GetRightX() * .2; // +
+  double XValue = DriverXbox.GetLeftX() * 1; // -
+  double YValue = -DriverXbox.GetLeftY()  * 1; // +
+  double ZValue = DriverXbox.GetRightX() * 1; // +
 
   // Tune Launcher PID
   double topPGain = frc::SmartDashboard::GetNumber("TOP PGain", TOP_PGAIN);
@@ -211,6 +236,10 @@ void Robot::TeleopPeriodic()
   SmartDashboard::PutNumber("DriveMotor 2 SetPoint", DriveTrain.GetMotorSetPoint(1));
   SmartDashboard::PutNumber("DriveMotor 3 SetPoint", DriveTrain.GetMotorSetPoint(2));
   SmartDashboard::PutNumber("DriveMotor 4 SetPoint", DriveTrain.GetMotorSetPoint(3));
+  SmartDashboard::PutNumber("DriveMotor 1 Distance", DriveTrain.GetMotorDistance(0));
+  SmartDashboard::PutNumber("DriveMotor 2 Distance", DriveTrain.GetMotorDistance(1));
+  SmartDashboard::PutNumber("DriveMotor 3 Distance", DriveTrain.GetMotorDistance(2));
+  SmartDashboard::PutNumber("DriveMotor 4 Distance", DriveTrain.GetMotorDistance(3));
 }
 
 #ifndef RUNNING_FRC_TESTS
